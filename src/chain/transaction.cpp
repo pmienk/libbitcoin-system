@@ -63,6 +63,21 @@ using namespace bc::system::machine;
     hash_mutex_.unlock_upgrade(); \
     return hash
 
+#define RETURN_CACHED_SHA_AND_BITCOIN(name, context, sha256_context, bitcoin_context) \
+    hash_mutex_.lock_upgrade(); \
+    if (!name##_##context##_) \
+    { \
+        hash_mutex_.unlock_upgrade_and_lock(); \
+        name##_##sha256_context##_ = std::make_shared<hash_digest>(sha256_hash( \
+            script::to_##name(*this))); \
+        name##_##bitcoin_context##_ = std::make_shared<hash_digest>(sha256_hash( \
+            *name##_##sha256_context##_)); \
+        hash_mutex_.unlock_and_lock_upgrade(); \
+    } \
+    const auto hash = *name##_##context##_; \
+    hash_mutex_.unlock_upgrade(); \
+    return hash
+
 // HACK: unlinked must match tx slab_map::not_found.
 const uint64_t transaction::validation::unlinked = max_int64;
 
@@ -394,8 +409,11 @@ void transaction::reset()
     outputs_.shrink_to_fit();
     invalidate_cache();
     outputs_hash_.reset();
+    outputs_sha256_hash_.reset();
     inpoints_hash_.reset();
     sequences_hash_.reset();
+    sequences_sha256_hash_.reset();
+    signatures_sha256_hash_.reset();
     segregated_ = boost::none;
     total_input_value_ = boost::none;
     total_output_value_ = boost::none;
@@ -564,6 +582,7 @@ void transaction::set_inputs(const input::list& value)
     invalidate_cache();
     inpoints_hash_.reset();
     sequences_hash_.reset();
+    sequences_sha256_hash_.reset();
     segregated_ = boost::none;
     total_input_value_ = boost::none;
 }
@@ -591,6 +610,7 @@ void transaction::set_outputs(const output::list& value)
     outputs_ = value;
     invalidate_cache();
     outputs_hash_.reset();
+    outputs_sha256_hash_.reset();
     total_output_value_ = boost::none;
 }
 
@@ -670,7 +690,14 @@ hash_digest transaction::hash(bool witness) const
 
 hash_digest transaction::outputs_hash() const
 {
-    RETURN_CACHED(outputs, bitcoin, hash);
+    RETURN_CACHED_SHA_AND_BITCOIN(outputs, hash, sha256_hash, hash);
+    // RETURN_CACHED(outputs, bitcoin, hash);
+}
+
+hash_digest transaction::outputs_sha256_hash() const
+{
+    RETURN_CACHED_SHA_AND_BITCOIN(outputs, sha256_hash, sha256_hash, hash);
+    // RETURN_CACHED(outputs, sha256, sha256_hash);
 }
 
 hash_digest transaction::inpoints_hash() const
@@ -680,7 +707,19 @@ hash_digest transaction::inpoints_hash() const
 
 hash_digest transaction::sequences_hash() const
 {
-    RETURN_CACHED(sequences, bitcoin, hash);
+    RETURN_CACHED_SHA_AND_BITCOIN(sequences, hash, sha256_hash, hash);
+    // RETURN_CACHED(sequences, bitcoin, hash);
+}
+
+hash_digest transaction::sequences_sha256_hash() const
+{
+    // RETURN_CACHED(sequences, sha256, sha256_hash);
+    RETURN_CACHED_SHA_AND_BITCOIN(sequences, sha256_hash, sha256_hash, hash);
+}
+
+hash_digest transaction::signatures_sha256_hash() const
+{
+    RETURN_CACHED(signatures, sha256, sha256_hash);
 }
 
 // Utilities.
@@ -1164,6 +1203,37 @@ code transaction::connect(const chain_state& state) const
             return ec;
 
     return error::success;
+}
+
+hash_digest transaction::get_standard_template_hash(uint32_t input_index) const
+{
+    bool has_nonempty_input_scripts = std::find_if(inputs_.begin(),
+        inputs_.end(),
+        [](const input& in) { return !in.script().empty(); }) == inputs_.end();
+
+    const auto contributing_hash_count = has_nonempty_input_scripts ? 3 : 2;
+    const auto size = (5 * sizeof(uint32_t)) +
+        (contributing_hash_count * hash_size);
+
+    data_chunk data;
+    data.reserve(size);
+    data_sink ostream(data);
+    ostream_writer sink(ostream);
+
+    sink.write_4_bytes_little_endian(version_);
+    sink.write_4_bytes_little_endian(locktime_);
+
+    if (has_nonempty_input_scripts)
+        sink.write_hash(signatures_sha256_hash());
+
+    sink.write_4_bytes_little_endian(inputs().size());
+    sink.write_hash(sequences_sha256_hash());
+    sink.write_4_bytes_little_endian(outputs().size());
+    sink.write_hash(outputs_sha256_hash());
+    sink.write_4_bytes_little_endian(input_index);
+    ostream.flush();
+
+    return sha256_hash(data);
 }
 
 #undef RETURN_CACHED

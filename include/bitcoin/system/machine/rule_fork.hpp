@@ -74,7 +74,10 @@ enum rule_fork : uint32_t
     /// Prevent dummy value malleability (soft fork, feature).
     bip147_rule = 1u << 14,
 
-    // Future bitcoin forks work forward from << 15.
+    /// Operation nop4 becomes check template verify (soft fork, feature).
+    bip119_rule = 1u << 15,
+
+    // Future bitcoin forks work forward from << 16.
     // Splitcoin/altcoin forks work backwards from << 30.
 
     /// Fix Satoshi's time warp bug (hard fork, security).
@@ -106,6 +109,9 @@ enum rule_fork : uint32_t
         rule_fork::bip141_rule |
         rule_fork::bip143_rule |
         rule_fork::bip147_rule,
+
+    /// Rules that use BIP9 bit five first time activation.
+    // bip9_bit5_group = rule_fork::bip119_rule,
 
     /// Mask to set all rule bits.
     all_rules = 0xffffffff

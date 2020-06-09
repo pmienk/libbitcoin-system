@@ -749,6 +749,31 @@ data_chunk script::to_sequences(const transaction& tx)
     return data;
 }
 
+data_chunk script::to_signatures(const transaction& tx)
+{
+    const auto sum = [&](size_t total, const input& input)
+    {
+        return total + input.script().serialized_size(false);
+    };
+
+    const auto& ins = tx.inputs();
+    auto size = std::accumulate(ins.begin(), ins.end(), size_t(0), sum);
+    data_chunk data;
+    data.reserve(size);
+    data_sink ostream(data);
+    ostream_writer sink(ostream);
+
+    const auto write = [&](const input& input)
+    {
+        input.script().to_data(sink, false);
+    };
+
+    std::for_each(ins.begin(), ins.end(), write);
+    ostream.flush();
+    BITCOIN_ASSERT(data.size() == size);
+    return data;
+}
+
 static size_t version_0_preimage_size(size_t script_size)
 {
     return sizeof(uint32_t)

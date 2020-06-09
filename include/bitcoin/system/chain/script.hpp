@@ -155,6 +155,7 @@ public:
     static data_chunk to_outputs(const transaction& tx);
     static data_chunk to_inpoints(const transaction& tx);
     static data_chunk to_sequences(const transaction& tx);
+    static data_chunk to_signatures(const transaction& tx);
 
     /// Determine if the fork is enabled in the active forks set.
     static bool is_enabled(uint32_t active_forks, rule_fork fork)

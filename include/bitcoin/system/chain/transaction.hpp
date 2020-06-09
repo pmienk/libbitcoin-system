@@ -169,12 +169,18 @@ public:
     void set_outputs(output::list&& value);
 
     hash_digest outputs_hash() const;
+    hash_digest outputs_sha256_hash() const;
     hash_digest inpoints_hash() const;
     hash_digest sequences_hash() const;
+    hash_digest sequences_sha256_hash() const;
+    hash_digest signatures_sha256_hash() const;
     hash_digest hash(bool witness=false) const;
 
     // Utilities.
     //-------------------------------------------------------------------------
+
+    // Compute the standard template hash for the transaction, input.
+    hash_digest get_standard_template_hash(uint32_t input_index) const;
 
     /// Clear witness from all inputs (does not change default hash).
     void strip_witness();
@@ -238,8 +244,11 @@ private:
     mutable hash_ptr hash_;
     mutable hash_ptr witness_hash_;
     mutable hash_ptr outputs_hash_;
+    mutable hash_ptr outputs_sha256_hash_;
     mutable hash_ptr inpoints_hash_;
     mutable hash_ptr sequences_hash_;
+    mutable hash_ptr sequences_sha256_hash_;
+    mutable hash_ptr signatures_sha256_hash_;
     mutable upgrade_mutex hash_mutex_;
 
     // These share a mutex as they are not expected to contend.
