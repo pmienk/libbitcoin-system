@@ -1205,13 +1205,13 @@ code transaction::connect(const chain_state& state) const
     return error::success;
 }
 
-hash_digest transaction::get_standard_template_hash(uint32_t input_index) const
+hash_digest transaction::standard_template_hash(uint32_t input_index) const
 {
-    bool has_nonempty_input_scripts = std::find_if(inputs_.begin(),
+    bool has_nonempty_signature_scripts = std::find_if(inputs_.begin(),
         inputs_.end(),
-        [](const input& in) { return !in.script().empty(); }) == inputs_.end();
+        [](const input& in) { return !in.script().empty(); }) != inputs_.end();
 
-    const auto contributing_hash_count = has_nonempty_input_scripts ? 3 : 2;
+    const auto contributing_hash_count = has_nonempty_signature_scripts ? 3 : 2;
     const auto size = (5 * sizeof(uint32_t)) +
         (contributing_hash_count * hash_size);
 
@@ -1223,7 +1223,7 @@ hash_digest transaction::get_standard_template_hash(uint32_t input_index) const
     sink.write_4_bytes_little_endian(version_);
     sink.write_4_bytes_little_endian(locktime_);
 
-    if (has_nonempty_input_scripts)
+    if (has_nonempty_signature_scripts)
         sink.write_hash(signatures_sha256_hash());
 
     sink.write_4_bytes_little_endian(inputs().size());

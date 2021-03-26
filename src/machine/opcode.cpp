@@ -315,8 +315,9 @@ std::string opcode_to_string(opcode value, uint32_t active_forks)
         case opcode::checksequenceverify:
             return script::is_enabled(active_forks, rule_fork::bip112_rule) ?
                 "checksequenceverify" : "nop3";
-        case opcode::nop4:
-            return "nop4";
+        case opcode::checktemplateverify:
+            return script::is_enabled(active_forks, rule_fork::bip119_rule) ?
+                "checktemplateverify" : "nop4";
         case opcode::nop5:
             return "nop5";
         case opcode::nop6:
@@ -591,7 +592,7 @@ bool opcode_from_string(opcode& out_code, const std::string& value)
     RETURN_IF_OPCODE("nop1", nop1);
     RETURN_IF_OPCODE_OR_ALIAS("checklocktimeverify", "nop2", checklocktimeverify);
     RETURN_IF_OPCODE_OR_ALIAS("checksequenceverify", "nop3", checksequenceverify);
-    RETURN_IF_OPCODE("nop4", nop4);
+    RETURN_IF_OPCODE_OR_ALIAS("checktemplateverify", "nop4", checktemplateverify);
     RETURN_IF_OPCODE("nop5", nop5);
     RETURN_IF_OPCODE("nop6", nop6);
     RETURN_IF_OPCODE("nop7", nop7);

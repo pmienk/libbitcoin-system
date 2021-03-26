@@ -19,6 +19,7 @@
 #ifndef LIBBITCOIN_SYSTEM_MACHINE_INTERPRETER_IPP
 #define LIBBITCOIN_SYSTEM_MACHINE_INTERPRETER_IPP
 
+#include <algorithm>
 #include <cstdint>
 #include <utility>
 #include <bitcoin/system/chain/transaction.hpp>
@@ -884,6 +885,34 @@ inline interpreter::result interpreter::op_check_sequence_verify(
         error::op_check_sequence_verify7 : error::success;
 }
 
+inline interpreter::result interpreter::op_check_template_verify(
+    program& program)
+{
+    if (!chain::script::is_enabled(program.forks(), rule_fork::bip119_rule))
+        return op_nop(opcode::nop4);
+
+    if (program.size() < 1)
+        return error::op_check_template_verify_empty;
+
+    const auto potential_hash = program.peek();
+
+    if (potential_hash.size() == hash_size)
+    {
+        auto template_hash = program.transaction().standard_template_hash(
+            program.input_index());
+
+        hash_digest provided_hash;
+        std::copy(potential_hash.begin(), potential_hash.end(),
+            provided_hash.begin());
+
+        if (template_hash != provided_hash)
+            return error::op_check_template_verify_mismatch;
+    }
+
+    // return error::success;
+    return op_nop(opcode::nop4);
+}
+
 // It is expected that the compiler will produce a very efficient jump table.
 inline interpreter::result interpreter::run_op(const operation& op,
     program& program)
@@ -1176,7 +1205,8 @@ inline interpreter::result interpreter::run_op(const operation& op,
             return op_check_locktime_verify(program);
         case opcode::checksequenceverify:
             return op_check_sequence_verify(program);
-        case opcode::nop4:
+        case opcode::checktemplateverify:
+            return op_check_template_verify(program);
         case opcode::nop5:
         case opcode::nop6:
         case opcode::nop7:

@@ -117,6 +117,77 @@ transaction new_tx(const script_test& test)
     };
 }
 
+transaction new_tx(const ctv_script_test& test)
+{
+    // Parse input script from string.
+    script input_script;
+    if (!input_script.from_string(test.test_script.input))
+        return {};
+
+    // Parse output script from string.
+    script output_script;
+    if (!output_script.from_string(test.test_script.output))
+        return {};
+
+    // Assign output script to input's prevout validation metadata.
+    output_point outpoint;
+    outpoint.metadata.cache.set_script(std::move(output_script));
+
+    auto test_input = input
+    {
+        std::move(outpoint),
+        std::move(input_script),
+        test.test_script.input_sequence
+    };
+
+    input::list inputs;
+    if (inputs.size() == test.test_script_index)
+        inputs.emplace_back(std::move(test_input));
+
+    for (const auto current_input : test.tx_inputs)
+    {
+        script current_script;
+        if (!current_script.from_string(current_input.script))
+            return {};
+
+        inputs.push_back(input
+        {
+            {},
+            std::move(current_script),
+            current_input.sequence
+        });
+
+        if (inputs.size() == test.test_script_index)
+            inputs.emplace_back(std::move(test_input));
+    }
+
+    if (inputs.size() != test.tx_inputs.size() + 1)
+        return {};
+
+    output::list outputs;
+    for (const auto current_output : test.tx_outputs)
+    {
+        script current_script;
+        if (!current_script.from_string(current_output.script))
+            return {};
+
+        outputs.push_back(output
+        {
+            current_output.value,
+            std::move(current_script)
+        });
+    }
+
+    // Construct transaction.
+    return transaction
+    {
+        test.test_script.version,
+        test.test_script.locktime,
+        std::move(inputs),
+        std::move(outputs)
+    };
+}
+
 std::string test_name(const script_test& test)
 {
     std::stringstream out;
@@ -531,7 +602,7 @@ BOOST_AUTO_TEST_CASE(script__context_free__valid)
 
         // These are always valid.
         BOOST_CHECK_MESSAGE(script::verify(tx, 0, rule_fork::no_rules) == error::success, name);
-        BOOST_CHECK_MESSAGE(script::verify(tx, 0, rule_fork::all_rules) == error::success, name);
+        BOOST_CHECK_MESSAGE(script::verify(tx, 0, rule_fork::all_rules & ~rule_fork::bip119_rule) == error::success, name);
     }
 }
 
@@ -1119,6 +1190,78 @@ BOOST_AUTO_TEST_CASE(script__verify__bip143_no_find_and_delete_tx__valid)
     // missing bip143, extra bip16 (find-and-delete treatment).
     result0 = script::verify(tx, 0, rule_fork::bip16_rule | rule_fork::bip141_rule);
     BOOST_REQUIRE_EQUAL(result0.value(), error::incorrect_signature);
+}
+
+BOOST_AUTO_TEST_CASE(script__verify__bip119_disabled__valid)
+{
+    for (const auto& test: valid_op_ctv_scripts)
+    {
+        const auto tx = new_tx(test);
+        const auto name = test_name(test.test_script);
+        BOOST_REQUIRE_MESSAGE(tx.is_valid(), name);
+
+        // These are valid prior to BIP119 activation.
+        BOOST_CHECK_MESSAGE(script::verify(tx, 0, rule_fork::no_rules) == error::success, name);
+        BOOST_CHECK_MESSAGE(script::verify(tx, 0, rule_fork::all_rules & ~rule_fork::bip119_rule) == error::success, name);
+    }
+
+    for (const auto& test: invalid_op_ctv_scripts)
+    {
+        const auto tx = new_tx(test);
+        const auto name = test_name(test.test_script);
+        BOOST_REQUIRE_MESSAGE(tx.is_valid(), name);
+
+        // These are valid prior to BIP119 activation.
+        BOOST_CHECK_MESSAGE(script::verify(tx, 0, rule_fork::no_rules) == error::success, name);
+        BOOST_CHECK_MESSAGE(script::verify(tx, 0, rule_fork::all_rules & ~rule_fork::bip119_rule) == error::success, name);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(script__verify__bip119_enabled__valid_examine)
+{
+    const auto& test = valid_op_ctv_scripts[1];
+
+    const auto tx = new_tx(test);
+    const auto name = test_name(test.test_script);
+    BOOST_REQUIRE_MESSAGE(tx.is_valid(), name);
+
+    std::cout << "hash: "
+        << encode_base16(tx.standard_template_hash(test.test_script_index)) << std::endl;
+
+    // These are valid after BIP119 activation.
+    BOOST_CHECK_MESSAGE(script::verify(tx, 0, rule_fork::bip119_rule) == error::success, name);
+    BOOST_CHECK_MESSAGE(script::verify(tx, 0, rule_fork::all_rules) == error::success, name);
+}
+
+BOOST_AUTO_TEST_CASE(script__verify__bip119_enabled__valid)
+{
+    for (const auto& test: valid_op_ctv_scripts)
+    {
+        const auto tx = new_tx(test);
+        const auto name = test_name(test.test_script);
+        BOOST_REQUIRE_MESSAGE(tx.is_valid(), name);
+
+        std::cout << "hash: "
+            << encode_hash(tx.standard_template_hash(test.test_script_index)) << std::endl;
+
+        // These are valid after BIP119 activation.
+        BOOST_CHECK_MESSAGE(script::verify(tx, 0, rule_fork::bip119_rule) == error::success, name);
+        BOOST_CHECK_MESSAGE(script::verify(tx, 0, rule_fork::all_rules) == error::success, name);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(script__verify__bip119_enabled__invalid)
+{
+    for (const auto& test: invalid_op_ctv_scripts)
+    {
+        const auto tx = new_tx(test);
+        const auto name = test_name(test.test_script);
+        BOOST_REQUIRE_MESSAGE(tx.is_valid(), name);
+
+        // These are invalid after BIP119 activation.
+        BOOST_CHECK_MESSAGE(script::verify(tx, 0, rule_fork::bip119_rule) != error::success, name);
+        BOOST_CHECK_MESSAGE(script::verify(tx, 0, rule_fork::all_rules) != error::success, name);
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

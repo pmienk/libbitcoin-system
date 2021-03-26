@@ -195,6 +195,27 @@ BOOST_AUTO_TEST_CASE(opcode__opcode_to_string__nop3_or_checksequenceverify_bip11
     BOOST_REQUIRE(opcode_to_string(opcode::nop3, rule_fork::all_rules) == "checksequenceverify");
 }
 
+// Ensure nop4 still serializes as 'nop4' without bip119 fork.
+BOOST_AUTO_TEST_CASE(opcode__opcode_to_string__nop4_or_checktemplateverify_any_fork_except_bip119__nop4)
+{
+    static_assert(opcode::checktemplateverify == opcode::nop4, "nop4 drift");
+    BOOST_REQUIRE(opcode_to_string(opcode::nop4, rule_fork::no_rules) == "nop4");
+    BOOST_REQUIRE(opcode_to_string(opcode::nop4, rule_fork::bip16_rule) == "nop4");
+    BOOST_REQUIRE(opcode_to_string(opcode::nop4, rule_fork::bip30_rule) == "nop4");
+    BOOST_REQUIRE(opcode_to_string(opcode::nop4, rule_fork::bip34_rule) == "nop4");
+    BOOST_REQUIRE(opcode_to_string(opcode::nop4, rule_fork::bip66_rule) == "nop4");
+    BOOST_REQUIRE(opcode_to_string(opcode::nop4, rule_fork::bip65_rule) == "nop4");
+    BOOST_REQUIRE(opcode_to_string(opcode::nop4, rule_fork::bip112_rule) == "nop4");
+}
+
+// Ensure nop4 and checktemplateverify serialize as 'checktemplateverify' with bip119 fork.
+BOOST_AUTO_TEST_CASE(opcode__opcode_to_string__nop4_or_checktemplateverify_bip119_fork__checktemplateverify)
+{
+    static_assert(opcode::checktemplateverify == opcode::nop4, "nop4 drift");
+    BOOST_REQUIRE(opcode_to_string(opcode::nop4, rule_fork::bip119_rule) == "checktemplateverify");
+    BOOST_REQUIRE(opcode_to_string(opcode::nop4, rule_fork::all_rules) == "checktemplateverify");
+}
+
 // All codes above 'nop10' serialize as hex.
 BOOST_AUTO_TEST_CASE(opcode__opcode_to_string__reserved_186_any_forks__0xba)
 {

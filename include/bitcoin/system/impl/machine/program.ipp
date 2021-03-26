@@ -177,6 +177,13 @@ inline void program::push_copy(const value_type& item)
 // Primary stack (pop).
 //-----------------------------------------------------------------------------
 
+inline data_chunk program::peek()
+{
+    BITCOIN_ASSERT(!empty());
+    const auto value = primary_.back();
+    return value;
+}
+
 // This must be guarded.
 inline data_chunk program::pop()
 {

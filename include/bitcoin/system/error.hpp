@@ -245,6 +245,8 @@ enum error_code_t
     op_check_sequence_verify5,
     op_check_sequence_verify6,
     op_check_sequence_verify7,
+    op_check_template_verify_empty,
+    op_check_template_verify_mismatch,
 
     // Added out of order (bip147).
     op_check_multisig_verify8,

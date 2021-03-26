@@ -101,6 +101,7 @@ public:
     void push_copy(const value_type& item);
 
     /// Primary pop.
+    data_chunk peek();
     data_chunk pop();
     bool pop(int32_t& out_value);
     bool pop(number& out_number, size_t maxiumum_size=max_number_size);

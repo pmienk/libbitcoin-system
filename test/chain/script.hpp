@@ -35,6 +35,23 @@ struct script_test
 
 typedef std::vector<script_test> script_test_list;
 
+struct ctv_tx_points
+{
+    std::string script;
+    uint32_t sequence;
+    uint64_t value;
+};
+
+struct ctv_script_test
+{
+    uint32_t test_script_index;
+    script_test test_script;
+    std::vector<ctv_tx_points> tx_inputs;
+    std::vector<ctv_tx_points> tx_outputs;
+};
+
+typedef std::vector<ctv_script_test> ctv_script_test_list;
+
 // These are valid prior to and after BIP16 activation.
 const script_test_list valid_bip16_scripts
 {{
@@ -826,6 +843,20 @@ const script_test_list invalid_context_free_scripts
     { "nop", "hash160 1", "" },
     { "nop", "hash256 1", "" },
     { "0x00", "'00' equal", "basic op_0 execution" }
+}};
+
+const ctv_script_test_list valid_op_ctv_scripts
+{{
+    { 0u, { "1", "checktemplateverify", "non-empty < 32 byte stack followed by checktemplateverify/nop4" }, {}, {} },
+    { 0u, { "", "[1b478eac753b160d9832b7f916d76be0ebe1065fad75ab0a6e421be987ebb932] checktemplateverify", "empty signature, valid template" }, {}, { { "nop", 0u, 12345u } } },
+    { 0u, { "nop", "[5ecb433806d9dbcf3b1c0a21e2b3390a99c049b595b3094f6bd0ed05c7a86856] checktemplateverify", "nop signature, valid template" }, {}, { { "nop", 0u, 12345u } } }
+}};
+
+const ctv_script_test_list invalid_op_ctv_scripts
+{{
+    { 0u, { "checktemplateverify", "1", "empty stack checktemplateverify/nop4" }, {}, {} },
+    { 0u, { "nop", "[aabbccddeeff00112233445566778899000102030405060708090a0b0c0e0f10] checktemplateverify", "32 byte stack invalid template" }, {}, {} },
+    { 0u, { "nop", "[5668a8c705edd06b4f09b395b549c0990a39b3e2210a1c3bcfdbd9063843cb5e] checktemplateverify", "nop signature, invalid template" }, {}, { { "nop", 0u, 12345u } } }
 }};
 
 ////// TODO: move these to operation tests.

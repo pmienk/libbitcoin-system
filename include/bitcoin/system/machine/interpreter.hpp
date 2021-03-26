@@ -110,6 +110,7 @@ public:
     static result op_check_multisig(program& program);
     static result op_check_locktime_verify(program& program);
     static result op_check_sequence_verify(program& program);
+    static result op_check_template_verify(program& program);
 
     /// Run program script.
     static code run(program& program);

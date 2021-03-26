@@ -180,7 +180,7 @@ public:
     //-------------------------------------------------------------------------
 
     // Compute the standard template hash for the transaction, input.
-    hash_digest get_standard_template_hash(uint32_t input_index) const;
+    hash_digest standard_template_hash(uint32_t input_index) const;
 
     /// Clear witness from all inputs (does not change default hash).
     void strip_witness();
