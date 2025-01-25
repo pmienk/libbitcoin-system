@@ -129,6 +129,22 @@ jobs:
             packager: "apt"
             packages: ""
 
+          - os: macos-latest
+            cxx: "clang++"
+            link: "static"
+            optimization: "size"
+            assert: "debug"
+            coverage: "nocov"
+            detectcpuflags: "detect"
+            boost: "--build-boost"
+            icu: ""
+            secp256k1: "--build-secp256k1"
+            cc: "clang"
+            flags: "-Og -fvisibility=hidden -fPIE -DBOOST_NO_CXX98_FUNCTION_BASE"
+            options: "--enable-isystem"
+            packager: "brew"
+            packages: "icu4c"
+
     runs-on: ${{ matrix.os }}
 
     env:
