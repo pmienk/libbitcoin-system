@@ -16,119 +16,6 @@ jobs:
       fail-fast: false
 
       matrix:
-        include:
-          - os: ubuntu-22.04
-            cxx: "clang++-15"
-            link: "static"
-            optimization: "size"
-            assert: "debug"
-            coverage: "nocov"
-            detectcpuflags: "ignore"
-            boost: "--build-boost"
-            icu: "--build-icu --with-icu"
-            secp256k1: "--build-secp256k1"
-            cc: "clang-15"
-            flags: "-Og -fPIE"
-            options: "--enable-isystem"
-            packager: "apt"
-            packages: ""
-
-          - os: ubuntu-22.04
-            cxx: "clang++-15"
-            link: "static"
-            optimization: "size"
-            assert: "debug"
-            coverage: "nocov"
-            detectcpuflags: "ignore"
-            boost: "--build-boost"
-            icu: "--build-icu --with-icu"
-            secp256k1: "--build-secp256k1"
-            cc: "clang-15"
-            flags: "-Og -fPIE"
-            options: "--enable-isystem --enable-avx2"
-            packager: "apt"
-            packages: ""
-
-          - os: ubuntu-22.04
-            cxx: "clang++-15"
-            link: "static"
-            optimization: "size"
-            assert: "debug"
-            coverage: "nocov"
-            detectcpuflags: "ignore"
-            boost: "--build-boost"
-            icu: "--build-icu --with-icu"
-            secp256k1: "--build-secp256k1"
-            cc: "clang-15"
-            flags: "-Og -fPIE"
-            options: "--enable-isystem --enable-avx2 --enable-sse41"
-            packager: "apt"
-            packages: ""
-
-          - os: ubuntu-22.04
-            cxx: "clang++-15"
-            link: "static"
-            optimization: "size"
-            assert: "debug"
-            coverage: "nocov"
-            detectcpuflags: "ignore"
-            boost: "--build-boost"
-            icu: "--build-icu --with-icu"
-            secp256k1: "--build-secp256k1"
-            cc: "clang-15"
-            flags: "-Og -fPIE"
-            options: "--enable-isystem --enable-avx2 --enable-sse41 --enable-shani"
-            packager: "apt"
-            packages: ""
-
-          - os: ubuntu-22.04
-            cxx: "clang++-15"
-            link: "static"
-            optimization: "size"
-            assert: "debug"
-            coverage: "nocov"
-            detectcpuflags: "ignore"
-            boost: "--build-boost"
-            icu: "--build-icu --with-icu"
-            secp256k1: "--build-secp256k1"
-            cc: "clang-15"
-            flags: "-Og -fPIE"
-            options: "--enable-isystem --enable-sse41"
-            packager: "apt"
-            packages: ""
-
-          - os: ubuntu-22.04
-            cxx: "clang++-15"
-            link: "static"
-            optimization: "size"
-            assert: "debug"
-            coverage: "nocov"
-            detectcpuflags: "ignore"
-            boost: "--build-boost"
-            icu: "--build-icu --with-icu"
-            secp256k1: "--build-secp256k1"
-            cc: "clang-15"
-            flags: "-Og -fPIE"
-            options: "--enable-isystem --enable-sse41 --enable-shani"
-            packager: "apt"
-            packages: ""
-
-          - os: ubuntu-22.04
-            cxx: "clang++-15"
-            link: "static"
-            optimization: "size"
-            assert: "debug"
-            coverage: "nocov"
-            detectcpuflags: "ignore"
-            boost: "--build-boost"
-            icu: "--build-icu --with-icu"
-            secp256k1: "--build-secp256k1"
-            cc: "clang-15"
-            flags: "-Og -fPIE"
-            options: "--enable-isystem --enable-shani"
-            packager: "apt"
-            packages: ""
-
           - os: macos-latest
             cxx: "clang++"
             link: "static"
@@ -221,6 +108,7 @@ jobs:
         run: |
           ${CC} -v
           ${CXX} -v
+          man ${CXX} | col -b
 
       - name: Display CPU details
         if: ${{ (runner.os == 'Linux') }}
