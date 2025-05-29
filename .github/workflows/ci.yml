@@ -83,7 +83,7 @@ jobs:
             flags: "-Os -m32 -fPIE"
             options: "--enable-isystem --enable-sse41"
             packager: "apt"
-            packages: "gcc-multilib libc6-dev-i386"
+            packages: "gcc-multilib g++-multilib libc6-dev-i386"
 
           - os: ubuntu-24.04
             cxx: "g++"
