@@ -767,6 +767,7 @@ build_from_tarball_boost()
         "cxxstd=11" \
         "variant=release" \
         "threading=multi" \
+        "architecture=x86"
         "$BOOST_TOOLSET" \
         "$BOOST_CXXFLAGS" \
         "$BOOST_LINKFLAGS" \
@@ -852,6 +853,7 @@ ICU_FLAGS=(
 # Define boost flags.
 #------------------------------------------------------------------------------
 BOOST_FLAGS=(
+"-m32"
 "-Wno-enum-constexpr-conversion")
 
 # Define secp256k1 flags.
