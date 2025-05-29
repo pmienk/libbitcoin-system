@@ -69,6 +69,23 @@ jobs:
             packages: ""
 
           - os: ubuntu-24.04
+            cxx: "g++-12"
+            link: "dynamic"
+            optimization: "size"
+            assert: "ndebug"
+            coverage: "nocov"
+            detectcpuflags: "ignore"
+            boost: "--build-boost"
+            icu: ""
+            llvm: ""
+            secp256k1: "--build-secp256k1"
+            cc: "gcc-12"
+            flags: "-Os -m32 -fPIE"
+            options: "--enable-isystem --enable-sse41"
+            packager: "apt"
+            packages: ""
+
+          - os: ubuntu-24.04
             cxx: "g++"
             link: "static"
             optimization: "size"
