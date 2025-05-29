@@ -69,7 +69,7 @@ jobs:
             packages: ""
 
           - os: ubuntu-24.04
-            cxx: "g++"
+            cxx: "g++-12"
             link: "dynamic"
             optimization: "size"
             assert: "ndebug"
@@ -79,11 +79,11 @@ jobs:
             icu: ""
             llvm: ""
             secp256k1: "--build-secp256k1"
-            cc: "gcc"
+            cc: "gcc-12"
             flags: "-Os -m32 -fPIE"
             options: "--enable-isystem --enable-sse41"
             packager: "apt"
-            packages: "gcc-multilib g++-multilib libc6-dev-i386"
+            packages: "gcc-multilib g++-multilib libc6-dev-i386 lib32stdc++-12-dev"
 
           - os: ubuntu-24.04
             cxx: "g++"
