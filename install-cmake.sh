@@ -715,7 +715,7 @@ cmake_project_directory()
     PROJ_CONFIG_DIR=$(pwd)
 
     create_directory "build-cmake"
-    pushd_directory "build-cmake"
+    push_directory "build-cmake"
     cmake -LA $@ "../$MAKEFILE_PATH"
     make_jobs "$JOBS"
 
