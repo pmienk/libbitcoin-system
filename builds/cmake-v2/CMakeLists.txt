@@ -161,7 +161,7 @@ write_basic_package_version_file(
 
 # Generate config file from template (see below)
 configure_package_config_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Bitcoin-SystemConfig.cmake.in"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Bitcoin-SystemConfig.cmake.in"
   "${CMAKE_CURRENT_BINARY_DIR}/Bitcoin-SystemConfig.cmake"
   INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libbitcoin-system
 )
