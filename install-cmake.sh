@@ -925,7 +925,7 @@ build_all()
     create_from_github bitcoin-core secp256k1 ${SECP256K1_BRANCH} "$BUILD_SECP256K1"
     local SAVE_CPPFLAGS="$CPPFLAGS"
     export CPPFLAGS="$CPPFLAGS ${SECP256K1_FLAGS[@]}"
-    build_from_github_cmake secp256k1 "." "$PARALLEL" false "$BUILD_SECP256K1" "${SECP256K1_OPTIONS[@]}" $CUMULATIVE_FILTERED_ARGS
+    build_from_github_cmake secp256k1 "." "$PARALLEL" false "$BUILD_SECP256K1" "${SECP256K1_OPTIONS[@]}" $CUMULATIVE_FILTERED_ARGS_CMAKE
     export CPPFLAGS=$SAVE_CPPFLAGS
     local SAVE_CPPFLAGS="$CPPFLAGS"
     export CPPFLAGS="$CPPFLAGS ${BITCOIN_SYSTEM_FLAGS[@]}"
