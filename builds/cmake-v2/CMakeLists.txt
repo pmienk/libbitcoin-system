@@ -21,10 +21,14 @@ set_property(CACHE LIBBITCOIN_CXX_STANDARD PROPERTY STRINGS 17 20 23)
 #   Dependencies
 # ──────────────────────────────────────────────────────────────
 
-find_package(Boost 1.74 REQUIRED
+find_package(Boost 1.86.0 REQUIRED
   COMPONENTS
-    atomic chrono date_time filesystem iostreams locale log
-    program_options regex system thread unit_test_framework
+    iostreams
+    locale
+    program_options
+    thread
+    url
+    unit_test_framework
 )
 
 # Optional – comment out if you don't need mnemonic / BIP-39 support
