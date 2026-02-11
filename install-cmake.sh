@@ -705,15 +705,16 @@ cmake_tests()
 cmake_project_directory()
 {
     local PROJ_NAME=$1
-    local JOBS=$2
-    local TEST=$3
-    shift 3
+    local MAKEFILE_PATH=$2
+    local JOBS=$3
+    local TEST=$4
+    shift 4
 
     push_directory "$PROJ_NAME"
     local PROJ_CONFIG_DIR
     PROJ_CONFIG_DIR=$(pwd)
 
-    cmake -LA $@ builds/cmake-v2
+    cmake -LA $@ MAKEFILE_PATH
     make_jobs "$JOBS"
 
     if [[ $TEST == true ]]; then
@@ -728,11 +729,12 @@ cmake_project_directory()
 build_from_github_cmake()
 {
     local REPO=$1
-    local JOBS=$2
-    local TEST=$3
-    local BUILD=$4
-    local OPTIONS=$5
-    shift 5
+    local MAKEFILE_PATH=$2
+    local JOBS=$3
+    local TEST=$4
+    local BUILD=$5
+    local OPTIONS=$6
+    shift 6
 
     if [[ ! ($BUILD) || ($BUILD == "no") ]]; then
         return
@@ -744,7 +746,7 @@ build_from_github_cmake()
     display_heading_message "Preparing to build $REPO"
 
     # Build the local repository clone.
-    cmake_project_directory "$REPO" "$JOBS" "$TEST" "${CONFIGURATION[@]}"
+    cmake_project_directory "$REPO" "$MAKEFILE_PATH" "$JOBS" "$TEST" "${CONFIGURATION[@]}"
 }
 
 # Because boost ICU static lib detection assumes in incorrect ICU path.
@@ -923,17 +925,17 @@ build_all()
     create_from_github bitcoin-core secp256k1 ${SECP256K1_BRANCH} "$BUILD_SECP256K1"
     local SAVE_CPPFLAGS="$CPPFLAGS"
     export CPPFLAGS="$CPPFLAGS ${SECP256K1_FLAGS[@]}"
-    build_from_github secp256k1 "$PARALLEL" false "$BUILD_SECP256K1" "${SECP256K1_OPTIONS[@]}" $CUMULATIVE_FILTERED_ARGS
+    build_from_github_cmake secp256k1 "." "$PARALLEL" false "$BUILD_SECP256K1" "${SECP256K1_OPTIONS[@]}" $CUMULATIVE_FILTERED_ARGS
     export CPPFLAGS=$SAVE_CPPFLAGS
     local SAVE_CPPFLAGS="$CPPFLAGS"
     export CPPFLAGS="$CPPFLAGS ${BITCOIN_SYSTEM_FLAGS[@]}"
     if [[ ! ($CI == true) ]]; then
         create_from_github libbitcoin libbitcoin-system ${BITCOIN_SYSTEM_BRANCH} "yes"
-        build_from_github_cmake libbitcoin-system "$PARALLEL" true "yes" "${BITCOIN_SYSTEM_OPTIONS[@]}" $CUMULATIVE_FILTERED_ARGS_CMAKE "$@"
+        build_from_github_cmake libbitcoin-system "builds/cmake-v2" "$PARALLEL" true "yes" "${BITCOIN_SYSTEM_OPTIONS[@]}" $CUMULATIVE_FILTERED_ARGS_CMAKE "$@"
     else
         push_directory "$PRESUMED_CI_PROJECT_PATH"
         push_directory ".."
-        build_from_github_cmake libbitcoin-system "$PARALLEL" true "yes" "${BITCOIN_SYSTEM_OPTIONS[@]}" $CUMULATIVE_FILTERED_ARGS_CMAKE "$@"
+        build_from_github_cmake libbitcoin-system "builds/cmake-v2" "$PARALLEL" true "yes" "${BITCOIN_SYSTEM_OPTIONS[@]}" $CUMULATIVE_FILTERED_ARGS_CMAKE "$@"
         pop_directory
         pop_directory
     fi
