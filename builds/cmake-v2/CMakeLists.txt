@@ -49,12 +49,12 @@ find_package(libsecp256k1 0.7.0 REQUIRED)   # ← most common today
 # ──────────────────────────────────────────────────────────────
 
 file(GLOB_RECURSE libbitcoin_system_HEADERS
-  "${CMAKE_CURRENT_SOURCE_DIR}/include/bitcoin/*.hpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/include/bitcoin/*.ipp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../../include/bitcoin/*.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../../include/bitcoin/*.ipp"
 )
 
 file(GLOB_RECURSE libbitcoin_system_SOURCES
-  "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../../src/*.cpp"
 )
 
 add_library(libbitcoin-system ${libbitcoin_system_SOURCES} ${libbitcoin_system_HEADERS})
