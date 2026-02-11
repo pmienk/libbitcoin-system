@@ -1007,10 +1007,10 @@ BOOST_OPTIONS=(
 # Define secp256k1 options.
 #------------------------------------------------------------------------------
 SECP256K1_OPTIONS=(
-"--disable-tests" \
-"--enable-experimental" \
-"--enable-module-recovery" \
-"--enable-module-schnorrsig")
+"-DSECP256K1_BUILD_TESTS=OFF" \
+"-DSECP256K1_EXPERIMENTAL=ON" \
+"-DSECP256K1_ENABLE_MODULE_RECOVERY=ON" \
+"-DSECP256K1_ENABLE_MODULE_SCHNORRSIG=ON")
 
 # Define bitcoin-system options.
 #------------------------------------------------------------------------------
