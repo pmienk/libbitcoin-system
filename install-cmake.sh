@@ -713,7 +713,7 @@ cmake_project_directory()
     local PROJ_CONFIG_DIR
     PROJ_CONFIG_DIR=$(pwd)
 
-    cmake -LA $@ builds/cmake
+    cmake -LA $@ builds/cmake-v2
     make_jobs "$JOBS"
 
     if [[ $TEST == true ]]; then
