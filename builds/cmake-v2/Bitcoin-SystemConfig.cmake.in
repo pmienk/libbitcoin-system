@@ -1,0 +1,16 @@
+# metadata: name/description/version
+
+# dependency requirements
+
+# Paths: includedir
+
+# flags: cppflags
+
+# linkage (libs)
+
+# avoid repeat discovery
+if (TARGET libbitcoin-system::libbitcoin-system)
+  return()
+endif()
+
+macro(message_guard)

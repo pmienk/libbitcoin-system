@@ -6,13 +6,16 @@ project(libbitcoin-system
   LANGUAGES CXX
 )
 
+list( APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/modules" )
+
 # ──────────────────────────────────────────────────────────────
 #   Options
-# ──────────────────────────────────────────────────────────────
+# ─────────────────────────────────────────────────────────────
 
-option(BUILD_SHARED_LIBS "Build shared library instead of static" OFF)
-option(LIBBITCOIN_WITH_TESTS "Build unit tests" ON)
-option(LIBBITCOIN_WITH_EXAMPLES "Build examples" ON)
+#option(BUILD_SHARED_LIBS "Build shared library instead of static" OFF)
+option(with-tests "Build unit tests" ON)
+option(with-examples "Build examples" ON)
+option(with-icu "Compile with International Components for Unicode." OFF)
 
 set(LIBBITCOIN_CXX_STANDARD 17 CACHE STRING "C++ standard to use (17, 20, 23)")
 set_property(CACHE LIBBITCOIN_CXX_STANDARD PROPERTY STRINGS 17 20 23)
@@ -32,15 +35,14 @@ find_package(Boost 1.86.0 REQUIRED
 )
 
 # Optional – comment out if you don't need mnemonic / BIP-39 support
-find_package(PkgConfig QUIET)
-if(PKG_CONFIG_FOUND)
-  pkg_check_modules(ICU ucs4 IMPORTED_TARGET GLOBAL)
+if (with-icu)
+    find_package( Icu-I18N 55.2 REQUIRED )
 endif()
 
 # secp256k1 – in practice often built from source or via vcpkg/conan
 # Here we assume it's already available as find_package target
 # (adjust according to your environment)
-find_package(secp256k1 QUIET)   # ← most common today
+find_package(libsecp256k1 0.7.0 REQUIRED)   # ← most common today
 
 # ──────────────────────────────────────────────────────────────
 #   Library definition
@@ -75,12 +77,13 @@ target_compile_definitions(libbitcoin-system
 
 target_link_libraries(libbitcoin-system
   PUBLIC
-    Boost::atomic Boost::chrono Boost::date_time
-    Boost::filesystem Boost::iostreams Boost::locale
-    Boost::log Boost::program_options Boost::regex
-    Boost::system Boost::thread
+    Boost::iostreams
+    Boost::locale
+    Boost::program_options
+    Boost::thread
+    Boost url
   PRIVATE
-    $<$<TARGET_EXISTS:secp256k1>:secp256k1::secp256k1>
+    $<$<TARGET_EXISTS:libsecp256k1>:libsecp256k1::libsecp256k1>
     $<$<TARGET_EXISTS:PkgConfig::ICU>:PkgConfig::ICU>
 )
 
@@ -158,8 +161,8 @@ write_basic_package_version_file(
 
 # Generate config file from template (see below)
 configure_package_config_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/libbitcoin-system-config.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/libbitcoin-system-config.cmake"
+  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Bitcoin-SystemConfig.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/Bitcoin-SystemConfig.cmake"
   INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libbitcoin-system
 )
 
@@ -170,17 +173,7 @@ install(EXPORT libbitcoin-systemTargets
 )
 
 install(FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/libbitcoin-system-config.cmake"
-  "${CMAKE_CURRENT_BINARY_DIR}/libbitcoin-system-config-version.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/Bitcoin-SystemConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/Bitcoin-SystemConfig-version.cmake"
   DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libbitcoin-system
-)
-
-# Optional: pkg-config file (many users still expect it)
-configure_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/libbitcoin-system.pc.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/libbitcoin-system.pc"
-  @ONLY
-)
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/libbitcoin-system.pc"
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
 )
