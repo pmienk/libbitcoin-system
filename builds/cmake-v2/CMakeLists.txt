@@ -235,9 +235,9 @@ target_link_libraries(${CANONICAL_SIMPLE_NAME}
     Boost::program_options
     Boost::thread
     Boost::url
-    ICU::data
     ICU::i18n
     ICU::uc
+    ICU::data
     libsecp256k1::secp256k1
 )
 
