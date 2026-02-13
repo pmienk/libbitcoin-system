@@ -260,6 +260,8 @@ set_target_properties(${CANONICAL_SIMPLE_NAME} PROPERTIES
 # ──────────────────────────────────────────────────────────────
 
 if(with-tests)
+  enable_testing()
+
   file(GLOB_RECURSE ${CANONICAL_PREFIX}_test_SOURCES
     "${CMAKE_CURRENT_SOURCE_DIR}/../../test/*.cpp"
   )
@@ -315,27 +317,29 @@ install(TARGETS ${CANONICAL_SIMPLE_NAME}
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
   INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-  FILE_SET HEADERS DESTINATION include/bitcoin
+  FILE_SET HEADERS DESTINATION include
 )
 
-install(DIRECTORY include
-  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-  FILES_MATCHING PATTERN "*.hpp" PATTERN "*.ipp"
-)
+#install(DIRECTORY include
+#  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+#  FILES_MATCHING
+#    PATTERN "*.hpp"
+#    PATTERN "*.ipp"
+#)
 
 # Generate and install version file
-write_basic_package_version_file(
-  "${CMAKE_CURRENT_BINARY_DIR}/Bitcoin-SystemConfig-version.cmake"
-  VERSION       ${PROJECT_VERSION}
-  COMPATIBILITY SameMajorVersion
-)
+#write_basic_package_version_file(
+#  "${CMAKE_CURRENT_BINARY_DIR}/Bitcoin-SystemConfig-version.cmake"
+#  VERSION       ${PROJECT_VERSION}
+#  COMPATIBILITY SameMajorVersion
+#)
 
 # Generate config file from template (see below)
-configure_package_config_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/Bitcoin-SystemConfig.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/Bitcoin-SystemConfig.cmake"
-  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${CANONICAL_SIMPLE_NAME}
-)
+#configure_package_config_file(
+#  "${CMAKE_CURRENT_SOURCE_DIR}/Bitcoin-SystemConfig.cmake.in"
+#  "${CMAKE_CURRENT_BINARY_DIR}/Bitcoin-SystemConfig.cmake"
+#  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${CANONICAL_SIMPLE_NAME}
+#)
 
 #install(EXPORT ${CANONICAL_SIMPLE_NAME}Targets
 #  FILE ${CANONICAL_SIMPLE_NAME}-targets.cmake
@@ -343,8 +347,8 @@ configure_package_config_file(
 #  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${CANONICAL_SIMPLE_NAME}
 #)
 
-install(FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/Bitcoin-SystemConfig.cmake"
-  "${CMAKE_CURRENT_BINARY_DIR}/Bitcoin-SystemConfig-version.cmake"
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${CANONICAL_SIMPLE_NAME}
-)
+#install(FILES
+#  "${CMAKE_CURRENT_BINARY_DIR}/Bitcoin-SystemConfig.cmake"
+#  "${CMAKE_CURRENT_BINARY_DIR}/Bitcoin-SystemConfig-version.cmake"
+#  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${CANONICAL_SIMPLE_NAME}
+#)
