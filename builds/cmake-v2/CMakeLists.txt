@@ -111,7 +111,7 @@ project(libbitcoin-system
   LANGUAGES C CXX
 )
 
-set(Boost_VERBOSE true)
+#set(Boost_VERBOSE true)
 
 list( APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/modules" )
 
@@ -171,12 +171,14 @@ find_package(Boost 1.86.0 REQUIRED
 
 #print_target_link_libraries(Boost::locale)
 
-replace_in_target_property( Boost::locale INTERFACE_LINK_LIBRARIES icudata ICU::data )
-replace_in_target_property( Boost::locale INTERFACE_LINK_LIBRARIES icui18n ICU::i18n )
-replace_in_target_property( Boost::locale INTERFACE_LINK_LIBRARIES icuuc ICU::uc )
-#remove_in_target_property( Boost::locale INTERFACE_LINK_LIBRARIES icudata )
-#remove_in_target_property( Boost::locale INTERFACE_LINK_LIBRARIES icui18n )
-#remove_in_target_property( Boost::locale INTERFACE_LINK_LIBRARIES icuuc )
+if (with-icu)
+  #replace_in_target_property( Boost::locale INTERFACE_LINK_LIBRARIES icudata ICU::data )
+  #replace_in_target_property( Boost::locale INTERFACE_LINK_LIBRARIES icui18n ICU::i18n )
+  #replace_in_target_property( Boost::locale INTERFACE_LINK_LIBRARIES icuuc ICU::uc )
+  remove_in_target_property( Boost::locale INTERFACE_LINK_LIBRARIES icudata )
+  remove_in_target_property( Boost::locale INTERFACE_LINK_LIBRARIES icui18n )
+  remove_in_target_property( Boost::locale INTERFACE_LINK_LIBRARIES icuuc )
+endif()
 
 # ──────────────────────────────────────────────────────────────
 #   Library definition
@@ -235,9 +237,9 @@ target_link_libraries(${CANONICAL_SIMPLE_NAME}
     Boost::program_options
     Boost::thread
     Boost::url
-    ICU::i18n
-    ICU::uc
-    ICU::data
+    $<$<BOOL:${with-icu}>:ICU::i18n ICU::uc ICU::data>
+#    $<$<BOOL:${with-icu}>:ICU::uc>
+#    $<$<BOOL:${with-icu}>:ICU::data>
     libsecp256k1::secp256k1
 )
 
