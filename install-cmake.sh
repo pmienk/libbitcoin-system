@@ -446,6 +446,13 @@ set_pkgconfigdir()
     with_pkgconfigdir="-Dpkgconfigdir=$PREFIX_PKG_CONFIG_DIR"
 }
 
+set_with_icu_prefix()
+{
+    if [[ $BUILD_ICU ]]; then
+        with_icu="ICU_ROOT=${PREFIX}"
+    fi
+}
+
 set_with_boost_prefix()
 {
     if [[ $BUILD_BOOST ]]; then
@@ -716,7 +723,13 @@ cmake_project_directory()
 
     create_directory "build-cmake"
     push_directory "build-cmake"
-    cmake -LA $@ "../$MAKEFILE_PATH"
+
+    VERBOSITY=""
+    if [[ $DISPLAY_VERBOSE ]]; then
+        VERBOSITY="-DCMAKE_VERBOSE_MAKEFILE=ON"
+    fi
+
+    cmake ${VERBOSITY} -LA $@ "../$MAKEFILE_PATH"
     make_jobs "$JOBS"
 
     if [[ $TEST == true ]]; then
@@ -960,6 +973,7 @@ normalize_static_and_shared_options "$@"
 remove_build_options
 set_prefix
 set_pkgconfigdir
+#set_with_icu_prefix
 set_with_boost_prefix
 
 remove_install_options
@@ -1018,6 +1032,7 @@ SECP256K1_OPTIONS=(
 # Define bitcoin-system options.
 #------------------------------------------------------------------------------
 BITCOIN_SYSTEM_OPTIONS=(
+"${with_icu}" \
 "${with_boost}" \
 "${with_pkgconfigdir}")
 

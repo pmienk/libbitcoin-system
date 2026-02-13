@@ -9,7 +9,7 @@ function(remove_in_target_property target property value)
 
     get_target_property(current "${target}" "${property}")
 
-    if(NOT current)
+   if(NOT current)
         # Property not set or empty → nothing to do
         return()
     endif()
@@ -319,7 +319,13 @@ install(TARGETS ${CANONICAL_SIMPLE_NAME}
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
   INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-  FILE_SET HEADERS DESTINATION include
+  FILE_SET HEADERS
+)
+
+install(EXPORT ${CANONICAL_SIMPLE_NAME}Targets
+  NAMESPACE ${CANONICAL_NAMESPACE}::
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${CANONICAL_SIMPLE_NAME}
+  FILE ${CANONICAL_SIMPLE_NAME}Targets.cmake
 )
 
 #install(DIRECTORY include
