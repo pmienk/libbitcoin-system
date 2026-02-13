@@ -169,7 +169,7 @@ find_package(Boost 1.86.0 REQUIRED
     unit_test_framework
 )
 
-print_target_link_libraries(Boost::locale)
+#print_target_link_libraries(Boost::locale)
 
 replace_in_target_property( Boost::locale INTERFACE_LINK_LIBRARIES icudata ICU::data )
 replace_in_target_property( Boost::locale INTERFACE_LINK_LIBRARIES icui18n ICU::i18n )
@@ -221,12 +221,12 @@ target_compile_definitions(${CANONICAL_SIMPLE_NAME}
     # Add other internal defines if needed, e.g. BC_USE_ICU
 )
 
-print_target_link_libraries(libsecp256k1::secp256k1)
-print_target_link_libraries(Boost::iostreams)
-print_target_link_libraries(Boost::locale)
-print_target_link_libraries(Boost::program_options)
-print_target_link_libraries(Boost::thread)
-print_target_link_libraries(Boost::url)
+#print_target_link_libraries(libsecp256k1::secp256k1)
+#print_target_link_libraries(Boost::iostreams)
+#print_target_link_libraries(Boost::locale)
+#print_target_link_libraries(Boost::program_options)
+#print_target_link_libraries(Boost::thread)
+#print_target_link_libraries(Boost::url)
 
 target_link_libraries(${CANONICAL_SIMPLE_NAME}
   PUBLIC
@@ -241,7 +241,7 @@ target_link_libraries(${CANONICAL_SIMPLE_NAME}
     libsecp256k1::secp256k1
 )
 
-print_target_link_libraries(${CANONICAL_NAMESPACED_NAME})
+#print_target_link_libraries(${CANONICAL_NAMESPACED_NAME})
 
 # Very common flags for libbitcoin projects
 target_compile_options(${CANONICAL_SIMPLE_NAME} PRIVATE

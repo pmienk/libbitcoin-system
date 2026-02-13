@@ -210,7 +210,7 @@ jobs:
 
       - name: Execute install-cmake.sh
         run: >
-          ./install-cmake.sh
+          DISPLAY_VERBOSE=1 ./install-cmake.sh
           --build-dir=${{ env.LIBBITCOIN_SRC_PATH }} ${{ matrix.options }}
           --prefix=${{ env.LIBBITCOIN_SRC_PATH }}prefix
           ${{ env.LINKAGE }}
