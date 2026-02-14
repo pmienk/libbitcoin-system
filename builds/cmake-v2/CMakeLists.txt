@@ -115,20 +115,13 @@ project(libbitcoin-system
 
 list( APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/modules" )
 
-set( CANONICAL_LIBRARY system )
-
 if (MSVC)
-  set( CANONICAL_NAMESPACE libbitcoin )
-else ()
-  set( CANONICAL_NAMESPACE bitcoin )
+  set( CMAKE_STATIC_LIBRARY_PREFIX "lib" )
+  set( CMAKE_SHARED_LIBRARY_PREFIX "lib" )
 endif ()
 
-set( CANONICAL_SIMPLE_NAME ${CANONICAL_NAMESPACE}-${CANONICAL_LIBRARY} )
-set( CANONICAL_PREFIX ${CANONICAL_NAMESPACE}_${CANONICAL_LIBRARY} )
-set( CANONICAL_NAMESPACED_NAME ${CANONICAL_NAMESPACE}::${CANONICAL_LIBRARY} )
-
-add_library( ${CANONICAL_SIMPLE_NAME} )
-add_library( ${CANONICAL_NAMESPACED_NAME} ALIAS ${CANONICAL_SIMPLE_NAME} )
+add_library( bitcoin-system )
+add_library( bitcoin::system ALIAS bitcoin-system )
 
 # ──────────────────────────────────────────────────────────────
 #   Options
@@ -184,40 +177,40 @@ endif()
 #   Library definition
 # ──────────────────────────────────────────────────────────────
 
-file(GLOB_RECURSE ${CANONICAL_PREFIX}_HEADERS CONFIGURE_DEPENDS
+file(GLOB_RECURSE bitcoin_system_HEADERS CONFIGURE_DEPENDS
   "${CMAKE_CURRENT_SOURCE_DIR}/../../include/bitcoin/*.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/../../include/bitcoin/*.ipp"
 )
 
-file( GLOB_RECURSE ${CANONICAL_PREFIX}_SOURCES CONFIGURE_DEPENDS
+file( GLOB_RECURSE bitcoin_system_SOURCES CONFIGURE_DEPENDS
   "${CMAKE_CURRENT_SOURCE_DIR}/../../src/*.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/../../src/*.c"
 )
 
-target_sources( ${CANONICAL_SIMPLE_NAME} PUBLIC
+target_sources( bitcoin-system PUBLIC
   FILE_SET HEADERS
   BASE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/../../include"
-  FILES ${${CANONICAL_PREFIX}_HEADERS}
+  FILES ${bitcoin_system_HEADERS}
 )
 
-target_sources( ${CANONICAL_SIMPLE_NAME} PRIVATE
-  ${${CANONICAL_PREFIX}_SOURCES}
+target_sources( bitcoin-system PRIVATE
+  ${bitcoin_system_SOURCES}
 )
 
-target_include_directories( ${CANONICAL_NAMESPACE}-${CANONICAL_LIBRARY}
+target_include_directories( bitcoin-system
   PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../include>
     $<INSTALL_INTERFACE:include>
 )
 
-target_include_directories( ${CANONICAL_NAMESPACE}-${CANONICAL_LIBRARY}
+target_include_directories( bitcoin-system
   PRIVATE
     ${icu_i18n_INCLUDE_DIRS}
 )
 
-target_compile_features(${CANONICAL_SIMPLE_NAME} PUBLIC cxx_std_${LIBBITCOIN_CXX_STANDARD})
+target_compile_features(bitcoin-system PUBLIC cxx_std_${LIBBITCOIN_CXX_STANDARD})
 
-target_compile_definitions(${CANONICAL_SIMPLE_NAME}
+target_compile_definitions(bitcoin-system
   PRIVATE
     $<$<BOOL:${BUILD_SHARED_LIBS}>:BC_DLL>
     # Add other internal defines if needed, e.g. BC_USE_ICU
@@ -230,7 +223,7 @@ target_compile_definitions(${CANONICAL_SIMPLE_NAME}
 #print_target_link_libraries(Boost::thread)
 #print_target_link_libraries(Boost::url)
 
-target_link_libraries(${CANONICAL_SIMPLE_NAME}
+target_link_libraries(bitcoin-system
   PUBLIC
     Boost::iostreams
     Boost::locale
@@ -243,15 +236,18 @@ target_link_libraries(${CANONICAL_SIMPLE_NAME}
     libsecp256k1::secp256k1
 )
 
-#print_target_link_libraries(${CANONICAL_NAMESPACED_NAME})
+#print_target_link_libraries(bitcoin::system)
 
 # Very common flags for libbitcoin projects
-target_compile_options(${CANONICAL_SIMPLE_NAME} PRIVATE
-  $<$<CXX_COMPILER_ID:MSVC>:/permissive- /W3>
-  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic>
+target_compile_options(bitcoin-system
+  PUBLIC
+    $<$<BOOL:${with-icu}>:-DWITH_ICU>
+  PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/permissive- /W3>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic>
 )
 
-set_target_properties(${CANONICAL_SIMPLE_NAME} PROPERTIES
+set_target_properties(bitcoin-system PROPERTIES
   VERSION   ${PROJECT_VERSION}
   SOVERSION ${PROJECT_VERSION_MAJOR}
   EXPORT_NAME system
@@ -264,25 +260,25 @@ set_target_properties(${CANONICAL_SIMPLE_NAME} PROPERTIES
 if(with-tests)
   enable_testing()
 
-  file(GLOB_RECURSE ${CANONICAL_PREFIX}_test_SOURCES
+  file(GLOB_RECURSE bitcoin_system_test_SOURCES
     "${CMAKE_CURRENT_SOURCE_DIR}/../../test/*.cpp"
   )
 
-  add_executable( ${CANONICAL_SIMPLE_NAME}-test )
+  add_executable( bitcoin-system-test )
 
-  target_sources( ${CANONICAL_SIMPLE_NAME}-test PRIVATE
-    ${${CANONICAL_PREFIX}_test_SOURCES} )
+  target_sources( bitcoin-system-test PRIVATE
+    ${bitcoin_system_test_SOURCES} )
 
-  target_link_libraries( ${CANONICAL_SIMPLE_NAME}-test PRIVATE
-    ${CANONICAL_NAMESPACED_NAME}
+  target_link_libraries( bitcoin-system-test PRIVATE
+    bitcoin::system
     Boost::unit_test_framework
   )
 
-  target_include_directories( ${CANONICAL_SIMPLE_NAME}-test PRIVATE
+  target_include_directories( bitcoin-system-test PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../include>
   )
 
-  add_test( NAME ${CANONICAL_SIMPLE_NAME}-test COMMAND ${CANONICAL_SIMPLE_NAME}-test
+  add_test( NAME bitcoin-system-test COMMAND bitcoin-system-test
     --run_test=*
     --log_level=warning
     --show_progress=no
@@ -302,7 +298,7 @@ if(LIBBITCOIN_WITH_EXAMPLES)
   foreach(ex_file IN LISTS example_SOURCES)
     get_filename_component(ex_name "${ex_file}" NAME_WE)
     add_executable(${ex_name} ${ex_file})
-    target_link_libraries(${ex_name} PRIVATE ${CANONICAL_SIMPLE_NAME})
+    target_link_libraries(${ex_name} PRIVATE bitcoin-system)
   endforeach()
 endif()
 
@@ -311,10 +307,9 @@ endif()
 # ──────────────────────────────────────────────────────────────
 
 include(GNUInstallDirs)
-include(CMakePackageConfigHelpers)
 
-install(TARGETS ${CANONICAL_SIMPLE_NAME}
-  EXPORT ${CANONICAL_SIMPLE_NAME}Targets
+install(TARGETS bitcoin-system
+  EXPORT bitcoin-system-targets
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
@@ -322,41 +317,29 @@ install(TARGETS ${CANONICAL_SIMPLE_NAME}
   FILE_SET HEADERS
 )
 
-install(EXPORT ${CANONICAL_SIMPLE_NAME}Targets
-  NAMESPACE ${CANONICAL_NAMESPACE}::
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${CANONICAL_SIMPLE_NAME}
-  FILE ${CANONICAL_SIMPLE_NAME}Targets.cmake
+install(EXPORT bitcoin-system-targets
+  NAMESPACE bitcoin::
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/bitcoin-system
+  FILE bitcoin-system-targets.cmake
 )
 
-#install(DIRECTORY include
-#  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-#  FILES_MATCHING
-#    PATTERN "*.hpp"
-#    PATTERN "*.ipp"
-#)
+include(CMakePackageConfigHelpers)
 
-# Generate and install version file
-#write_basic_package_version_file(
-#  "${CMAKE_CURRENT_BINARY_DIR}/Bitcoin-SystemConfig-version.cmake"
-#  VERSION       ${PROJECT_VERSION}
-#  COMPATIBILITY SameMajorVersion
-#)
+configure_package_config_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/bitcoin-system-config.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/bitcoin-system-config.cmake
+  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/bitcoin-system
+)
 
-# Generate config file from template (see below)
-#configure_package_config_file(
-#  "${CMAKE_CURRENT_SOURCE_DIR}/Bitcoin-SystemConfig.cmake.in"
-#  "${CMAKE_CURRENT_BINARY_DIR}/Bitcoin-SystemConfig.cmake"
-#  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${CANONICAL_SIMPLE_NAME}
-#)
+write_basic_package_version_file(
+  bitcoin-system-config-version.cmake
+  VERSION ${PACKAGE_VERSION}
+  COMPATIBILITY AnyNewerVersion
+)
 
-#install(EXPORT ${CANONICAL_SIMPLE_NAME}Targets
-#  FILE ${CANONICAL_SIMPLE_NAME}-targets.cmake
-#  NAMESPACE libbitcoin::
-#  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${CANONICAL_SIMPLE_NAME}
-#)
-
-#install(FILES
-#  "${CMAKE_CURRENT_BINARY_DIR}/Bitcoin-SystemConfig.cmake"
-#  "${CMAKE_CURRENT_BINARY_DIR}/Bitcoin-SystemConfig-version.cmake"
-#  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${CANONICAL_SIMPLE_NAME}
-#)
+install(
+  FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/bitcoin-system-config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/bitcoin-system-config-version.cmake
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/bitcoin-system
+)
