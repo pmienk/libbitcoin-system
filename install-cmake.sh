@@ -973,7 +973,7 @@ normalize_static_and_shared_options "$@"
 remove_build_options
 set_prefix
 set_pkgconfigdir
-#set_with_icu_prefix
+set_with_icu_prefix
 set_with_boost_prefix
 
 remove_install_options
