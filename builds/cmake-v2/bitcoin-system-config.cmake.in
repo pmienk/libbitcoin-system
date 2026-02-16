@@ -28,9 +28,3 @@ find_dependency(Boost 1.86 REQUIRED
 )
 
 find_dependency(libsecp256k1 0.7.0 REQUIRED)
-
-# If you support ICU conditionally
-# find_dependency(PkgConfig)
-# pkg_check_modules(ICU ucs4 QUIET)
-
-# secp256k1 is frequently vendored or found differently – left optional here

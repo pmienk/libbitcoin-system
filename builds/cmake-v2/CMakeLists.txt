@@ -203,25 +203,7 @@ target_include_directories( bitcoin-system
     $<INSTALL_INTERFACE:include>
 )
 
-target_include_directories( bitcoin-system
-  PRIVATE
-    ${icu_i18n_INCLUDE_DIRS}
-)
-
 target_compile_features(bitcoin-system PUBLIC cxx_std_${LIBBITCOIN_CXX_STANDARD})
-
-target_compile_definitions(bitcoin-system
-  PRIVATE
-    $<$<BOOL:${BUILD_SHARED_LIBS}>:BC_DLL>
-    # Add other internal defines if needed, e.g. BC_USE_ICU
-)
-
-#print_target_link_libraries(libsecp256k1::secp256k1)
-#print_target_link_libraries(Boost::iostreams)
-#print_target_link_libraries(Boost::locale)
-#print_target_link_libraries(Boost::program_options)
-#print_target_link_libraries(Boost::thread)
-#print_target_link_libraries(Boost::url)
 
 target_link_libraries(bitcoin-system
   PUBLIC
