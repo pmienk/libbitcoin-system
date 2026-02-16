@@ -7,12 +7,24 @@ check_required_components(system)
 # Propagate dependencies to consumers
 include(CMakeFindDependencyMacro)
 
-find_dependency(Boost 1.86 REQUIRED COMPONENTS
-  iostreams
-  locale
-  program_options
-  thread
-  url
+set(with-icu @with-icu@)
+
+if (with-icu)
+  find_dependency( ICU 55.2 REQUIRED
+    COMPONENTS
+      uc
+      i18n
+      data
+  )
+endif()
+
+find_dependency(Boost 1.86 REQUIRED
+  COMPONENTS
+    iostreams
+    locale
+    program_options
+    thread
+    url
 )
 
 # If you support ICU conditionally
