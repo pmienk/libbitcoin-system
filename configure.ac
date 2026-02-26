@@ -412,28 +412,6 @@ AS_CASE([${with_tests}], [yes],
      AC_MSG_NOTICE([boost_unit_test_framework_LIBS : ${boost_unit_test_framework_LIBS}])],
     [AC_SUBST([boost_unit_test_framework_LIBS], [])])
 
-# Require pthread if not on android and output ${pthread_CPPFLAGS/LIBS}.
-#------------------------------------------------------------------------------
-# Hard wired -lpthread because AX_PTHREAD does not do it.
-AS_CASE([${host_os}],
-    [*android*],
-    [AC_SUBST([pthread_LIBS], [])],
-    [AX_PTHREAD(
-        [AC_SUBST([pthread_CPPFLAGS], [${PTHREAD_CPPFLAGS}])
-         AC_SUBST([pthread_ISYS_CPPFLAGS], [`echo ${PTHREAD_CPPFLAGS} | $SED s/^-I/-isystem/g | $SED s/' -I'/' -isystem'/g`])
-         AC_SUBST([pthread_LIBS], [-lpthread])
-         AC_MSG_NOTICE([pthread_CPPFLAGS : ${pthread_CPPFLAGS}])
-         AC_MSG_NOTICE([pthread_ISYS_CPPFLAGS : ${pthread_ISYS_CPPFLAGS}])],
-        [AC_MSG_ERROR([pthread library is required but was not found.])])
-
-    AS_CASE([${enable_isystem}],[yes],
-        [AC_SUBST([pthread_BUILD_CPPFLAGS], [${pthread_ISYS_CPPFLAGS}])],
-        [AC_SUBST([pthread_BUILD_CPPFLAGS], [${pthread_CPPFLAGS}])])
-
-    AC_MSG_NOTICE([pthread_BUILD_CPPFLAGS : ${pthread_BUILD_CPPFLAGS}])])
-
-AC_MSG_NOTICE([pthread_LIBS : ${pthread_LIBS}])
-
 # Require rt if on linux if not on android and output ${rt_LIBS}.
 #------------------------------------------------------------------------------
 

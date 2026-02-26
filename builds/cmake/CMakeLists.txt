@@ -340,22 +340,6 @@ set( Boost_LIBRARY_DIR $<IF:$<BOOL:${enable-ndebug}>,"${Boost_LIBRARY_DIR_RELEAS
 set( boost_CPPFLAGS "-I${Boost_INCLUDE_DIR}" )
 set( boost_LDFLAGS "-L${Boost_LIBRARY_DIR}" )
 
-set( CMAKE_THREAD_PREFER_PTHREAD ON )
-set( THREADS_PREFER_PTHREAD_FLAG ON )
-
-# Find threads
-#------------------------------------------------------------------------------
-if (NOT ANDROID)
-    find_package( Threads REQUIRED )
-endif()
-
-if ( Threads_FOUND AND NOT ANDROID )
-    # TODO: find proper detection - documentation on FindThreads appears incorrect.
-    set( pthread_CPPFLAGS "" )
-    set( pthread_LIBRARIES "-lpthread" )
-    set( pthread_LIBS "-lpthread" )
-endif()
-
 # Find rt
 #------------------------------------------------------------------------------
 if ((${CMAKE_SYSTEM_NAME} MATCHES "Linux") AND NOT ANDROID)
@@ -392,7 +376,6 @@ endif()
 #------------------------------------------------------------------------------
 include_directories( SYSTEM
     ${Boost_INCLUDE_DIR}
-    ${pthread_INCLUDE_DIRS}
     ${rt_INCLUDE_DIRS}
     ${icu_i18n_FOR_BUILD_INCLUDE_DIRS}
     ${dl_INCLUDE_DIRS}
@@ -412,7 +395,6 @@ endif()
 #------------------------------------------------------------------------------
 link_directories(
     ${Boost_LIBRARY_DIRS}
-    ${pthread_LIBRARY_DIRS}
     ${rt_LIBRARY_DIRS}
     ${icu_i18n_FOR_BUILD_LIBRARY_DIRS}
     ${dl_LIBRARY_DIRS}
@@ -457,7 +439,6 @@ link_libraries(
     ${Boost_PROGRAM_OPTIONS_LIBRARY}
     ${Boost_THREAD_LIBRARY}
     ${Boost_URL_LIBRARY}
-    ${pthread_LIBRARIES}
     ${rt_LIBRARIES}
     ${icu_i18n_FOR_BUILD_LIBRARIES}
     ${dl_LIBRARIES}
@@ -636,7 +617,6 @@ endif()
 target_include_directories( ${CANONICAL_LIB_NAME} PRIVATE
     "../../include"
     ${Boost_INCLUDE_DIR}
-    ${pthread_INCLUDE_DIRS}
     ${rt_INCLUDE_DIRS}
     ${icu_i18n_FOR_BUILD_INCLUDE_DIRS}
     ${dl_INCLUDE_DIRS}
@@ -663,7 +643,6 @@ target_link_libraries( ${CANONICAL_LIB_NAME}
     ${Boost_PROGRAM_OPTIONS_LIBRARY}
     ${Boost_THREAD_LIBRARY}
     ${Boost_URL_LIBRARY}
-    ${pthread_LIBRARIES}
     ${rt_LIBRARIES}
     ${icu_i18n_FOR_BUILD_LIBRARIES}
     ${dl_LIBRARIES}
