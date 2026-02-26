@@ -346,12 +346,6 @@ if (with-icu)
     find_package( Icu-I18N 55.2 REQUIRED )
 endif()
 
-# Find dl
-#------------------------------------------------------------------------------
-if ((${CMAKE_SYSTEM_NAME} MATCHES "Linux"))
-    find_package( Dl REQUIRED )
-endif()
-
 # Find secp256k1
 #------------------------------------------------------------------------------
 find_package( Secp256K1 0.5.1.0 REQUIRED )
@@ -371,7 +365,6 @@ endif()
 include_directories( SYSTEM
     ${Boost_INCLUDE_DIR}
     ${icu_i18n_FOR_BUILD_INCLUDE_DIRS}
-    ${dl_INCLUDE_DIRS}
     ${secp256k1_FOR_BUILD_INCLUDE_DIRS} )
 
 # Define project common library directories for build.
@@ -389,7 +382,6 @@ endif()
 link_directories(
     ${Boost_LIBRARY_DIRS}
     ${icu_i18n_FOR_BUILD_LIBRARY_DIRS}
-    ${dl_LIBRARY_DIRS}
     ${secp256k1_FOR_BUILD_LIBRARY_DIRS} )
 
 # Define project common linker flags.
@@ -432,7 +424,6 @@ link_libraries(
     ${Boost_THREAD_LIBRARY}
     ${Boost_URL_LIBRARY}
     ${icu_i18n_FOR_BUILD_LIBRARIES}
-    ${dl_LIBRARIES}
     ${secp256k1_FOR_BUILD_LIBRARIES} )
 
 add_definitions(
@@ -609,7 +600,6 @@ target_include_directories( ${CANONICAL_LIB_NAME} PRIVATE
     "../../include"
     ${Boost_INCLUDE_DIR}
     ${icu_i18n_FOR_BUILD_INCLUDE_DIRS}
-    ${dl_INCLUDE_DIRS}
     ${secp256k1_FOR_BUILD_INCLUDE_DIRS} )
 
 target_include_directories( ${CANONICAL_LIB_NAME} PUBLIC
@@ -634,7 +624,6 @@ target_link_libraries( ${CANONICAL_LIB_NAME}
     ${Boost_THREAD_LIBRARY}
     ${Boost_URL_LIBRARY}
     ${icu_i18n_FOR_BUILD_LIBRARIES}
-    ${dl_LIBRARIES}
     ${secp256k1_FOR_BUILD_LIBRARIES} )
 
 # Define libbitcoin-system-examples project.

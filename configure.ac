@@ -435,18 +435,6 @@ AS_CASE([${enable_isystem}],[yes],
 
 AC_MSG_NOTICE([icu_i18n_BUILD_CPPFLAGS : ${icu_i18n_BUILD_CPPFLAGS}])
 
-# Require dl if on linux and output ${dl_LIBS}.
-#------------------------------------------------------------------------------
-
-AS_CASE([${host_os}],
-    [*linux*],
-    [AC_CHECK_LIB([dl], [dlopen],
-        [AC_SUBST([dl_LIBS], [-ldl])],
-        [AC_MSG_ERROR([dl library is required but was not found.])])],
-    [AC_SUBST([dl_LIBS], [])])
-
-AC_MSG_NOTICE([dl_LIBS : ${dl_LIBS}])
-
 # Require secp256k1 of at least version 0.5.1.0 and output ${secp256k1_CPPFLAGS/LIBS/PKG}.
 #------------------------------------------------------------------------------
 PKG_CHECK_MODULES([secp256k1], [libsecp256k1 >= 0.5.1.0], [],
