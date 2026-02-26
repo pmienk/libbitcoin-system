@@ -340,12 +340,6 @@ set( Boost_LIBRARY_DIR $<IF:$<BOOL:${enable-ndebug}>,"${Boost_LIBRARY_DIR_RELEAS
 set( boost_CPPFLAGS "-I${Boost_INCLUDE_DIR}" )
 set( boost_LDFLAGS "-L${Boost_LIBRARY_DIR}" )
 
-# Find rt
-#------------------------------------------------------------------------------
-if ((${CMAKE_SYSTEM_NAME} MATCHES "Linux") AND NOT ANDROID)
-    find_package( Rt REQUIRED )
-endif()
-
 # Find icu-i18n
 #------------------------------------------------------------------------------
 if (with-icu)
@@ -376,7 +370,6 @@ endif()
 #------------------------------------------------------------------------------
 include_directories( SYSTEM
     ${Boost_INCLUDE_DIR}
-    ${rt_INCLUDE_DIRS}
     ${icu_i18n_FOR_BUILD_INCLUDE_DIRS}
     ${dl_INCLUDE_DIRS}
     ${secp256k1_FOR_BUILD_INCLUDE_DIRS} )
@@ -395,7 +388,6 @@ endif()
 #------------------------------------------------------------------------------
 link_directories(
     ${Boost_LIBRARY_DIRS}
-    ${rt_LIBRARY_DIRS}
     ${icu_i18n_FOR_BUILD_LIBRARY_DIRS}
     ${dl_LIBRARY_DIRS}
     ${secp256k1_FOR_BUILD_LIBRARY_DIRS} )
@@ -439,7 +431,6 @@ link_libraries(
     ${Boost_PROGRAM_OPTIONS_LIBRARY}
     ${Boost_THREAD_LIBRARY}
     ${Boost_URL_LIBRARY}
-    ${rt_LIBRARIES}
     ${icu_i18n_FOR_BUILD_LIBRARIES}
     ${dl_LIBRARIES}
     ${secp256k1_FOR_BUILD_LIBRARIES} )
@@ -617,7 +608,6 @@ endif()
 target_include_directories( ${CANONICAL_LIB_NAME} PRIVATE
     "../../include"
     ${Boost_INCLUDE_DIR}
-    ${rt_INCLUDE_DIRS}
     ${icu_i18n_FOR_BUILD_INCLUDE_DIRS}
     ${dl_INCLUDE_DIRS}
     ${secp256k1_FOR_BUILD_INCLUDE_DIRS} )
@@ -643,7 +633,6 @@ target_link_libraries( ${CANONICAL_LIB_NAME}
     ${Boost_PROGRAM_OPTIONS_LIBRARY}
     ${Boost_THREAD_LIBRARY}
     ${Boost_URL_LIBRARY}
-    ${rt_LIBRARIES}
     ${icu_i18n_FOR_BUILD_LIBRARIES}
     ${dl_LIBRARIES}
     ${secp256k1_FOR_BUILD_LIBRARIES} )

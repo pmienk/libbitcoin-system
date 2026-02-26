@@ -412,20 +412,6 @@ AS_CASE([${with_tests}], [yes],
      AC_MSG_NOTICE([boost_unit_test_framework_LIBS : ${boost_unit_test_framework_LIBS}])],
     [AC_SUBST([boost_unit_test_framework_LIBS], [])])
 
-# Require rt if on linux if not on android and output ${rt_LIBS}.
-#------------------------------------------------------------------------------
-
-AS_CASE([${host_os}],
-    [*android*],
-    [AC_SUBST([rt_LIBS], [])],
-    [*linux*],
-    [AC_CHECK_LIB([rt], [clock_gettime],
-        [AC_SUBST([rt_LIBS], [-lrt])],
-        [AC_MSG_ERROR([rt library is required but was not found.])])],
-    [AC_SUBST([rt_LIBS], [])])
-
-AC_MSG_NOTICE([rt_LIBS : ${rt_LIBS}])
-
 # Require icu-i18n of at least version 55.2 and output ${icu_i18n_CPPFLAGS/LIBS/PKG}.
 #------------------------------------------------------------------------------
 AS_CASE([${with_icu}], [yes],
