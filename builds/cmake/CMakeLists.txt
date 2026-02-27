@@ -343,7 +343,7 @@ set( boost_LDFLAGS "-L${Boost_LIBRARY_DIR}" )
 # Find icu-i18n
 #------------------------------------------------------------------------------
 if (with-icu)
-    find_package( Icu-I18N 55.2 REQUIRED )
+    find_package( Icu-I18N 78.2 REQUIRED )
 endif()
 
 # Find secp256k1

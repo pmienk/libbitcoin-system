@@ -412,14 +412,14 @@ AS_CASE([${with_tests}], [yes],
      AC_MSG_NOTICE([boost_unit_test_framework_LIBS : ${boost_unit_test_framework_LIBS}])],
     [AC_SUBST([boost_unit_test_framework_LIBS], [])])
 
-# Require icu-i18n of at least version 55.2 and output ${icu_i18n_CPPFLAGS/LIBS/PKG}.
+# Require icu-i18n of at least version 78.2 and output ${icu_i18n_CPPFLAGS/LIBS/PKG}.
 #------------------------------------------------------------------------------
 AS_CASE([${with_icu}], [yes],
-    [PKG_CHECK_MODULES([icu_i18n], [icu-i18n >= 55.2], [],
+    [PKG_CHECK_MODULES([icu_i18n], [icu-i18n >= 78.2], [],
         [
-          AC_MSG_ERROR([--with-icu specified but icu-i18n >= 55.2 was not found.])
+          AC_MSG_ERROR([--with-icu specified but icu-i18n >= 78.2 was not found.])
         ])
-     AC_SUBST([icu_i18n_PKG], ['icu-i18n >= 55.2'])
+     AC_SUBST([icu_i18n_PKG], ['icu-i18n >= 78.2'])
      AC_SUBST([icu_i18n_CPPFLAGS], [${icu_i18n_CFLAGS}])
      AC_SUBST([icu_i18n_ISYS_CPPFLAGS], [`echo ${icu_i18n_CPPFLAGS} | $SED s/^-I/-isystem/g | $SED s/' -I'/' -isystem'/g`]])
      AC_MSG_NOTICE([icu_i18n_CPPFLAGS : ${icu_i18n_CPPFLAGS}])

@@ -63,8 +63,8 @@ PRESUMED_CI_PROJECT_PATH=$(pwd)
 
 # ICU archive.
 #------------------------------------------------------------------------------
-ICU_URL="https://github.com/unicode-org/icu/releases/download/release-55-2/icu4c-55_2-src.tgz"
-ICU_ARCHIVE="icu4c-55_2-src.tgz"
+ICU_URL="https://github.com/unicode-org/icu/releases/download/release-78.2/icu4c-78.2-sources.tgz"
+ICU_ARCHIVE="icu4c-78.2-sources.tgz"
 
 # Boost archive.
 #------------------------------------------------------------------------------
@@ -880,7 +880,7 @@ build_from_tarball_boost()
     # "-sICU_LINK=${ICU_LIBS[*]}"
 
     ./b2 install \
-        "cxxstd=11" \
+        "cxxstd=20" \
         "variant=release" \
         "threading=multi" \
         "$BOOST_TOOLSET" \
