@@ -192,6 +192,9 @@ jobs:
           if [[ ${{ matrix.link }} == 'dynamic' ]]; then
             echo "LDFLAGS=-Wl,-rpath,${WORKSPACE_SUBPATH}prefix/lib" >> $GITHUB_ENV
           fi
+          if [[ "${{ matrix.packages }}" == *icu4c* ]]; then
+            echo "ICU_ROOT=/opt/homebrew/opt/icu4c" >> $GITHUB_ENV
+          fi
 
       - name: Display Compiler details
         shell: bash
@@ -466,6 +469,10 @@ jobs:
           if [[ ${{ matrix.link }} == 'dynamic' ]]; then
             echo "LDFLAGS=-Wl,-rpath,${WORKSPACE_SUBPATH}prefix/lib" >> $GITHUB_ENV
           fi
+          if [[ "${{ matrix.packages }}" == *icu4c* ]]; then
+            echo "ICU_ROOT=/opt/homebrew/opt/icu4c" >> $GITHUB_ENV
+          fi
+
 
       - name: Display Compiler details
         shell: bash
@@ -702,6 +709,10 @@ jobs:
           if [[ ${{ matrix.link }} == 'dynamic' ]]; then
             echo "LDFLAGS=-Wl,-rpath,${WORKSPACE_SUBPATH}prefix/${{ matrix.preset }}/lib" >> $GITHUB_ENV
           fi
+          if [[ "${{ matrix.packages }}" == *icu4c* ]]; then
+            echo "ICU_ROOT=/opt/homebrew/opt/icu4c" >> $GITHUB_ENV
+          fi
+
 
       - name: Display Compiler details
         shell: bash
