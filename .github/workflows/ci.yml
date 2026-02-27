@@ -194,6 +194,7 @@ jobs:
           fi
           if [[ "${{ matrix.packages }}" == *icu4c* ]]; then
             echo "ICU_ROOT=/opt/homebrew/opt/icu4c" >> $GITHUB_ENV
+            echo "PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/opt/homebrew/opt/icu4c" >> $GITHUB_ENV
           fi
 
       - name: Display Compiler details
