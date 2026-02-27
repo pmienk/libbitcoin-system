@@ -677,7 +677,7 @@ initialize_boost_icu_configuration()
         circumvent_boost_icu_detection
 
         # Extract ICU prefix directory from package config variable.
-        ICU_PREFIX=$(pkg-config icu-i18n --variable=prefix)
+        ICU_ROOT=$(pkg-config icu-i18n --variable=prefix)
 
         # Extract ICU libs from package config variables and augment with -ldl.
         ICU_LIBS="$(pkg-config icu-i18n --libs) -ldl"
@@ -732,7 +732,7 @@ build_from_tarball_boost()
     display_message "boost.locale.posix    : $BOOST_ICU_POSIX"
     display_message "-sNO_BZIP2            : 1"
     display_message "-sNO_ZSTD             : 1"
-    display_message "-sICU_PATH            : $ICU_PREFIX"
+    display_message "-sICU_PATH            : $ICU_ROOT"
   # display_message "-sICU_LINK            : " "${ICU_LIBS[*]}"
     display_message "-j                    : $JOBS"
     display_message "-d0                   : [supress informational messages]"
@@ -746,7 +746,7 @@ build_from_tarball_boost()
     ./bootstrap.sh \
         "--with-bjam=./b2" \
         "--prefix=$PREFIX" \
-        "--with-icu=$ICU_PREFIX"
+        "--with-icu=$ICU_ROOT"
 
     # boost_regex:
     # As of boost 1.72.0 the ICU_LINK symbol is no longer supported and
@@ -767,7 +767,7 @@ build_from_tarball_boost()
         "boost.locale.posix=$BOOST_ICU_POSIX" \
         "-sNO_BZIP2=1" \
         "-sNO_ZSTD=1" \
-        "-sICU_PATH=$ICU_PREFIX" \
+        "-sICU_PATH=$ICU_ROOT" \
         "-j $JOBS" \
         "-d0" \
         "-q" \
