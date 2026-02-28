@@ -437,11 +437,14 @@ initialize_icu_packages()
         # Update PKG_CONFIG_PATH for ICU package installations on OSX.
         # OSX provides libicucore.dylib with no pkgconfig and doesn't support
         # renaming or important features, so we can't use that.
-        local HOMEBREW_ICU_PKG_CONFIG="/opt/homebrew/opt/icu4c/lib/pkgconfig"
+        local HOMEBREW_USR_ICU_PKG_CONFIG="/usr/local/opt/icu4c/lib/pkgconfig"
+        local HOMEBREW_OPT_ICU_PKG_CONFIG="/opt/homebrew/opt/icu4c/lib/pkgconfig"
         local MACPORTS_ICU_PKG_CONFIG="/opt/local/lib/pkgconfig"
 
-        if [[ -d "$HOMEBREW_ICU_PKG_CONFIG" ]]; then
-            export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$HOMEBREW_ICU_PKG_CONFIG"
+        if [[ -d "$HOMEBREW_USR_ICU_PKG_CONFIG" ]]; then
+            export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$HOMEBREW_USR_ICU_PKG_CONFIG"
+        elif [[ -d "$HOMEBREW_OPT_ICU_PKG_CONFIG" ]]; then
+            export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$HOMEBREW_OPT_ICU_PKG_CONFIG"
         elif [[ -d "$MACPORTS_ICU_PKG_CONFIG" ]]; then
             export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:$MACPORTS_ICU_PKG_CONFIG"
         fi
@@ -677,7 +680,7 @@ initialize_boost_icu_configuration()
         circumvent_boost_icu_detection
 
         # Extract ICU prefix directory from package config variable.
-        ICU_ROOT=$(pkg-config icu-i18n --variable=prefix)
+        ICU_PREFIX=$(pkg-config icu-i18n --variable=prefix)
 
         # Extract ICU libs from package config variables and augment with -ldl.
         ICU_LIBS="$(pkg-config icu-i18n --libs) -ldl"
@@ -732,7 +735,7 @@ build_from_tarball_boost()
     display_message "boost.locale.posix    : $BOOST_ICU_POSIX"
     display_message "-sNO_BZIP2            : 1"
     display_message "-sNO_ZSTD             : 1"
-    display_message "-sICU_PATH            : $ICU_ROOT"
+    display_message "-sICU_PATH            : $ICU_PREFIX"
   # display_message "-sICU_LINK            : " "${ICU_LIBS[*]}"
     display_message "-j                    : $JOBS"
     display_message "-d0                   : [supress informational messages]"
@@ -746,7 +749,7 @@ build_from_tarball_boost()
     ./bootstrap.sh \
         "--with-bjam=./b2" \
         "--prefix=$PREFIX" \
-        "--with-icu=$ICU_ROOT"
+        "--with-icu=$ICU_PREFIX"
 
     # boost_regex:
     # As of boost 1.72.0 the ICU_LINK symbol is no longer supported and
@@ -767,7 +770,7 @@ build_from_tarball_boost()
         "boost.locale.posix=$BOOST_ICU_POSIX" \
         "-sNO_BZIP2=1" \
         "-sNO_ZSTD=1" \
-        "-sICU_PATH=$ICU_ROOT" \
+        "-sICU_PATH=$ICU_PREFIX" \
         "-j $JOBS" \
         "-d0" \
         "-q" \
