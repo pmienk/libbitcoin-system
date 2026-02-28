@@ -437,7 +437,7 @@ initialize_icu_packages()
         # Update PKG_CONFIG_PATH for ICU package installations on OSX.
         # OSX provides libicucore.dylib with no pkgconfig and doesn't support
         # renaming or important features, so we can't use that.
-        local HOMEBREW_ICU_PKG_CONFIG="/usr/local/opt/icu4c/lib/pkgconfig"
+        local HOMEBREW_ICU_PKG_CONFIG="/opt/homebrew/opt/icu4c/lib/pkgconfig"
         local MACPORTS_ICU_PKG_CONFIG="/opt/local/lib/pkgconfig"
 
         if [[ -d "$HOMEBREW_ICU_PKG_CONFIG" ]]; then
