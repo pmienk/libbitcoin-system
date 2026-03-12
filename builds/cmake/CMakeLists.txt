@@ -207,17 +207,17 @@ if ( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" )
 endif()
 
 #------------------------------------------------------------------------------
-# bitcoin-system library
+# libbitcoin-system library
 #------------------------------------------------------------------------------
-add_library( bitcoin-system )
-add_library( bitcoin::system ALIAS bitcoin-system )
+add_library( libbitcoin-system )
+add_library( bitcoin::system ALIAS libbitcoin-system )
 
-target_compile_features( bitcoin-system
+target_compile_features( libbitcoin-system
   PUBLIC
     cxx_std_20
 )
 
-target_compile_options( bitcoin-system
+target_compile_options( libbitcoin-system
   PUBLIC
     $<$<BOOL:${enable-avx2}>:-mavx -mavx2>
     $<$<BOOL:${enable-avx512}>:-mavx512f -mavx512bw>
@@ -237,39 +237,39 @@ target_compile_options( bitcoin-system
     $<$<CXX_COMPILER_ID:GNU>:-fno-var-tracking-assignments>
 )
 
-target_compile_definitions( bitcoin-system
+target_compile_definitions( libbitcoin-system
   PUBLIC
     $<$<BOOL:${with-icu}>:WITH_ICU>
 )
 
-file( GLOB_RECURSE bitcoin_system_HEADERS CONFIGURE_DEPENDS
+file( GLOB_RECURSE libbitcoin_system_HEADERS CONFIGURE_DEPENDS
   "${CMAKE_CURRENT_SOURCE_DIR}/../../include/*.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/../../include/*.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/../../include/*.ipp"
 )
 
-file( GLOB_RECURSE bitcoin_system_SOURCES CONFIGURE_DEPENDS
+file( GLOB_RECURSE libbitcoin_system_SOURCES CONFIGURE_DEPENDS
   "${CMAKE_CURRENT_SOURCE_DIR}/../../src/*.c"
   "${CMAKE_CURRENT_SOURCE_DIR}/../../src/*.cpp"
 )
 
-target_sources( bitcoin-system
+target_sources( libbitcoin-system
   PUBLIC
     FILE_SET HEADERS
     BASE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/../../include"
     FILES
-      ${bitcoin_system_HEADERS}
+      ${libbitcoin_system_HEADERS}
   PRIVATE
-    ${bitcoin_system_SOURCES}
+    ${libbitcoin_system_SOURCES}
 )
 
-target_include_directories( bitcoin-system
+target_include_directories( libbitcoin-system
   PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../include>
     $<INSTALL_INTERFACE:include>
 )
 
-target_link_libraries( bitcoin-system
+target_link_libraries( libbitcoin-system
   PUBLIC
     Boost::iostreams
     Boost::locale
@@ -282,23 +282,24 @@ target_link_libraries( bitcoin-system
     libsecp256k1::secp256k1
 )
 
-set_target_properties(bitcoin-system
+set_target_properties( libbitcoin-system
   PROPERTIES
     VERSION ${PROJECT_VERSION}
     SOVERSION ${PROJECT_VERSION_MAJOR}
     EXPORT_NAME system
+    OUTPUT_NAME bitcoin-system
 )
 
 #------------------------------------------------------------------------------
-# bitcoin-system-test tests
+# libbitcoin-system-test tests
 #------------------------------------------------------------------------------
 if ( with-test )
-  add_executable( bitcoin-system-test )
+  add_executable( libbitcoin-system-test )
 
   enable_testing()
 
-  add_test( NAME bitcoin-system-test
-    COMMAND bitcoin-system-test
+  add_test( NAME libbitcoin-system-test
+    COMMAND libbitcoin-system-test
     --run_test=*
     --log_level=warning
     --show_progress=no
@@ -307,7 +308,7 @@ if ( with-test )
     --build_info=yes
   )
 
-  target_compile_options( bitcoin-system-test
+  target_compile_options( libbitcoin-system-test
     PRIVATE
       -Wall
       -Wextra
@@ -322,20 +323,26 @@ if ( with-test )
       $<$<CXX_COMPILER_ID:GNU>:-fno-var-tracking-assignments>
   )
 
-  file( GLOB_RECURSE bitcoin_system_test_SOURCES CONFIGURE_DEPENDS
+  file( GLOB_RECURSE libbitcoin_system_test_SOURCES CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/../../test/*.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/../../test/*.cpp"
   )
 
-  target_sources( bitcoin-system-test
+  target_sources( libbitcoin-system-test
     PRIVATE
-      ${bitcoin_system_test_SOURCES}
+      ${libbitcoin_system_test_SOURCES}
   )
 
-  target_link_libraries( bitcoin-system-test
+  target_link_libraries( libbitcoin-system-test
     PRIVATE
       Boost::unit_test_framework
       bitcoin::system
+  )
+
+  set_target_properties( libbitcoin-system-test
+    PROPERTIES
+      VERSION ${PROJECT_VERSION}
+      SOVERSION ${PROJECT_VERSION_MAJOR}
   )
 endif()
 
@@ -374,6 +381,12 @@ if ( with-examples )
     PRIVATE
       bitcoin::system
   )
+
+  set_target_properties( examples
+    PROPERTIES
+      VERSION ${PROJECT_VERSION}
+      SOVERSION ${PROJECT_VERSION_MAJOR}
+  )
 endif()
 #------------------------------------------------------------------------------
 # Installation routine.
@@ -381,8 +394,8 @@ endif()
 include( GNUInstallDirs )
 include( CMakePackageConfigHelpers )
 
-install( TARGETS bitcoin-system
-  EXPORT bitcoin-system-targets
+install( TARGETS libbitcoin-system
+  EXPORT libbitcoin-system-targets
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
@@ -390,27 +403,27 @@ install( TARGETS bitcoin-system
   FILE_SET HEADERS
 )
 
-install( EXPORT bitcoin-system-targets
+install( EXPORT libbitcoin-system-targets
   NAMESPACE bitcoin::
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/bitcoin-system
-  FILE bitcoin-system-targets.cmake
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libbitcoin-system
+  FILE libbitcoin-system-targets.cmake
 )
 
 configure_package_config_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/bitcoin-system-config.cmake.in
-  ${CMAKE_CURRENT_BINARY_DIR}/bitcoin-system-config.cmake
-  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/bitcoin-system
+  ${CMAKE_CURRENT_SOURCE_DIR}/libbitcoin-system-config.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/libbitcoin-system-config.cmake
+  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libbitcoin-system
 )
 
 write_basic_package_version_file(
-  "${CMAKE_CURRENT_BINARY_DIR}/bitcoin-system-config-version.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/libbitcoin-system-config-version.cmake"
   VERSION ${PACKAGE_VERSION}
   COMPATIBILITY AnyNewerVersion
 )
 
 install(
   FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/bitcoin-system-config.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/bitcoin-system-config-version.cmake
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/bitcoin-system
+    ${CMAKE_CURRENT_BINARY_DIR}/libbitcoin-system-config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/libbitcoin-system-config-version.cmake
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libbitcoin-system
 )
