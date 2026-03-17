@@ -720,7 +720,7 @@ cmake_tests()
 cmake_project_directory()
 {
     local PROJ_NAME=$1
-    local PRESET=$2
+    local CMAKE_PATH=$2
     local JOBS=$3
     local TEST=$4
     shift 4
@@ -729,10 +729,51 @@ cmake_project_directory()
     local PROJ_CONFIG_DIR
     PROJ_CONFIG_DIR=$(pwd)
 
-    push_directory "builds/cmake"
-    display_message "Preparing cmake --preset=$PRESET $@"
-    cmake -LA --preset=$PRESET $@
-    popd
+    create_directory "build-cmake"
+    push_directory "build-cmake"
+
+    VERBOSITY=""
+    if [[ $DISPLAY_VERBOSE ]]; then
+        VERBOSITY="-DCMAKE_VERBOSE_MAKEFILE=ON"
+    fi
+
+    cmake ${VERBOSITY} -LA $@ "../${CMAKE_PATH}"
+    make_jobs "$JOBS"
+
+    if [[ $TEST == true ]]; then
+        cmake_tests "$JOBS"
+    fi
+
+    make install
+    configure_links
+    pop_directory # build-cmake
+    pop_directory # PROJ_NAME
+}
+
+preset_project_directory()
+{
+    local PROJ_NAME=$1
+    local CMAKE_PATH=$2
+    local PRESET=$3
+    local JOBS=$4
+    local TEST=$5
+    shift 5
+
+    push_directory "$PROJ_NAME"
+    local PROJ_CONFIG_DIR
+    PROJ_CONFIG_DIR=$(pwd)
+
+    create_directory "build-cmake"
+    push_directory "build-cmake"
+
+    VERBOSITY=""
+    if [[ $DISPLAY_VERBOSE ]]; then
+        VERBOSITY="-DCMAKE_VERBOSE_MAKEFILE=ON"
+    fi
+
+    display_message "Preparing cmake --preset=${PRESET} $@"
+    cmake ${VERBOSITY} -LA --preset=${PRESET} $@ "../${CMAKE_PATH}"
+    popd # build-cmake
 
     push_directory "obj/$PRESET"
     make_jobs "$JOBS"
@@ -743,14 +784,14 @@ cmake_project_directory()
 
     make install
     configure_links
-    pop_directory
-    pop_directory
+    pop_directory # obj/$PREST
+    pop_directory # PROJ_NAME
 }
 
 build_from_github_cmake()
 {
     local REPO=$1
-    local PRESET=$2
+    local CMAKE_PATH=$2
     local JOBS=$3
     local TEST=$4
     local BUILD=$5
@@ -767,7 +808,31 @@ build_from_github_cmake()
     display_heading_message "Preparing to build $REPO"
 
     # Build the local repository clone.
-    cmake_project_directory "$REPO" "$PRESET" "$JOBS" "$TEST" "${CONFIGURATION[@]}"
+    cmake_project_directory "$REPO" "$CMAKE_PATH" "$JOBS" "$TEST" "${CONFIGURATION[@]}"
+}
+
+build_from_github_preset()
+{
+    local REPO=$1
+    local CMAKE_PATH=$2
+    local PRESET=$3
+    local JOBS=$4
+    local TEST=$5
+    local BUILD=$6
+    local OPTIONS=$7
+    shift 7
+
+    if [[ ! ($BUILD) || ($BUILD == "no") ]]; then
+        return
+    fi
+
+    # Join generated and command line options.
+    local CONFIGURATION=("${OPTIONS[@]}" "$@")
+
+    display_heading_message "Preparing to build $REPO"
+
+    # Build the local repository clone.
+    preset_project_directory "$REPO" "$CMAKE_PATH" "$PRESET" "$JOBS" "$TEST" "${CONFIGURATION[@]}"
 }
 
 # Because boost ICU static lib detection assumes in incorrect ICU path.
@@ -941,20 +1006,19 @@ build_all()
     create_from_github bitcoin-core secp256k1 ${SECP256K1_BRANCH} "$BUILD_SECP256K1"
     local SAVE_CPPFLAGS="$CPPFLAGS"
     export CPPFLAGS="$CPPFLAGS ${SECP256K1_FLAGS[@]}"
-    display_message "secp256k1 PRESET ${REPO_PRESET[secp256k1]}"
-    build_from_github_cmake secp256k1 ${REPO_PRESET[secp256k1]} "$PARALLEL" false "$BUILD_SECP256K1" "${SECP256K1_OPTIONS[@]}" $CUMULATIVE_FILTERED_ARGS_CMAKE "$@"
+    build_from_github_cmake secp256k1 "." "$PARALLEL" false "$BUILD_SECP256K1" "${SECP256K1_OPTIONS[@]}" $CUMULATIVE_FILTERED_ARGS_CMAKE "$@"
     export CPPFLAGS=$SAVE_CPPFLAGS
     local SAVE_CPPFLAGS="$CPPFLAGS"
     export CPPFLAGS="$CPPFLAGS ${BITCOIN_SYSTEM_FLAGS[@]}"
     if [[ ! ($CI == true) ]]; then
         create_from_github pmienk libbitcoin-system ${BITCOIN_SYSTEM_BRANCH} "yes"
         display_message "libbitcoin-system PRESET ${REPO_PRESET[libbitcoin-system]}"
-        build_from_github_cmake libbitcoin-system ${REPO_PRESET[libbitcoin-system]} "$PARALLEL" true                 "yes" "${BITCOIN_SYSTEM_OPTIONS[@]}" $CUMULATIVE_FILTERED_ARGS_CMAKE "$@"
+        build_from_github_preset libbitcoin-system "builds/cmake" ${REPO_PRESET[libbitcoin-system]} "$PARALLEL" true "yes" "${BITCOIN_SYSTEM_OPTIONS[@]}" $CUMULATIVE_FILTERED_ARGS_CMAKE "$@"
     else
         push_directory "$PRESUMED_CI_PROJECT_PATH"
         push_directory ".."
         display_message "libbitcoin-system PRESET ${REPO_PRESET[libbitcoin-system]}"
-        build_from_github_cmake libbitcoin-system ${REPO_PRESET[libbitcoin-system]} "$PARALLEL" true "yes" "${BITCOIN_SYSTEM_OPTIONS[@]}" $CUMULATIVE_FILTERED_ARGS_CMAKE "$@"
+        build_from_github_preset libbitcoin-system "builds/cmake" ${REPO_PRESET[libbitcoin-system]} "$PARALLEL" true "yes" "${BITCOIN_SYSTEM_OPTIONS[@]}" $CUMULATIVE_FILTERED_ARGS_CMAKE "$@"
         pop_directory
         pop_directory
     fi
