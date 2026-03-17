@@ -293,6 +293,11 @@ if ( with-test )
     --build_info=yes
   )
 
+  target_compile_features( libbitcoin-system-test
+    PUBLIC
+      cxx_std_20
+  )
+
   target_compile_options( libbitcoin-system-test
     PRIVATE
       -Wall
@@ -337,6 +342,11 @@ endif()
 #------------------------------------------------------------------------------
 if ( with-examples )
   add_executable( examples )
+
+  target_compile_features( examples
+    PUBLIC
+      cxx_std_20
+  )
 
   target_compile_options( examples
     PRIVATE
