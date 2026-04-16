@@ -101,29 +101,12 @@ jobs:
             echo "branch=${{ github.ref_name }}" >> $GITHUB_OUTPUT
           fi
 
-      - name: Checkout repository [boost]
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 1
-          path: 'boost'
-          ref: ${{ steps.get-branch.outputs.branch_name
-          repository: ${{ github.repository_owner }}/boost
-,       else
-          repository: ${{ github.repository }}
-      - name: Checkout repository [secp256k1]
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 1
-          path: 'secp256k1'
-          ref: ${{ steps.get-branch.outputs.branch_name
-          repository: ${{ github.repository_owner }}/secp256k1
-,       else
-          repository: ${{ github.repository }}
       - name: Checkout repository [libbitcoin-system]
         uses: actions/checkout@v6
         with:
           fetch-depth: 1
           path: 'libbitcoin-system'
+          repository: ${{ github.repository }}
 
       - name: Prepare toolchain [linux]
         if: ${{ startsWith(matrix.image, 'ubuntu') }}
@@ -272,29 +255,12 @@ jobs:
             echo "branch=${{ github.ref_name }}" >> $GITHUB_OUTPUT
           fi
 
-      - name: Checkout repository [boost]
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 1
-          path: 'boost'
-          ref: ${{ steps.get-branch.outputs.branch_name
-          repository: ${{ github.repository_owner }}/boost
-,       else
-          repository: ${{ github.repository }}
-      - name: Checkout repository [secp256k1]
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 1
-          path: 'secp256k1'
-          ref: ${{ steps.get-branch.outputs.branch_name
-          repository: ${{ github.repository_owner }}/secp256k1
-,       else
-          repository: ${{ github.repository }}
       - name: Checkout repository [libbitcoin-system]
         uses: actions/checkout@v6
         with:
           fetch-depth: 1
           path: 'libbitcoin-system'
+          repository: ${{ github.repository }}
 
       - name: Prepare toolchain [linux]
         if: ${{ startsWith(matrix.image, 'ubuntu') }}
@@ -407,29 +373,12 @@ jobs:
             echo "branch=${{ github.ref_name }}" >> $GITHUB_OUTPUT
           fi
 
-      - name: Checkout repository [boost]
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 1
-          path: 'boost'
-          ref: ${{ steps.get-branch.outputs.branch_name
-          repository: ${{ github.repository_owner }}/boost
-,       else
-          repository: ${{ github.repository }}
-      - name: Checkout repository [secp256k1]
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 1
-          path: 'secp256k1'
-          ref: ${{ steps.get-branch.outputs.branch_name
-          repository: ${{ github.repository_owner }}/secp256k1
-,       else
-          repository: ${{ github.repository }}
       - name: Checkout repository [libbitcoin-system]
         uses: actions/checkout@v6
         with:
           fetch-depth: 1
           path: 'libbitcoin-system'
+          repository: ${{ github.repository }}
 
       - name: Prepare toolchain [linux]
         if: ${{ startsWith(matrix.image, 'ubuntu') }}
@@ -519,29 +468,12 @@ jobs:
         with:
           msbuild-architecture: x64
 
-      - name: Checkout repository [boost]
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 1
-          path: 'boost'
-          ref: ${{ steps.get-branch.outputs.branch_name
-          repository: ${{ github.repository_owner }}/boost
-,       else
-          repository: ${{ github.repository }}
-      - name: Checkout repository [secp256k1]
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 1
-          path: 'secp256k1'
-          ref: ${{ steps.get-branch.outputs.branch_name
-          repository: ${{ github.repository_owner }}/secp256k1
-,       else
-          repository: ${{ github.repository }}
       - name: Checkout repository [libbitcoin-system]
         uses: actions/checkout@v6
         with:
           fetch-depth: 1
           path: 'libbitcoin-system'
+          repository: ${{ github.repository }}
 
       - name: Execute build
         shell: cmd
