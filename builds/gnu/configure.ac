@@ -83,6 +83,7 @@ AC_ARG_ENABLE([isystem],
     [enable_isystem=$enableval],
     [enable_isystem=no])
 AC_MSG_RESULT([$enable_isystem])
+AM_CONDITIONAL([ENABLE_ISYSTEM], [test "x${enable_isystem}" != "xno"])
 
 AC_MSG_CHECKING([--with-pkgconfigdir option])
 AC_ARG_WITH([pkgconfigdir],
@@ -100,6 +101,7 @@ AC_ARG_ENABLE([ndebug],
     [enable_ndebug=$enableval],
     [enable_ndebug=no])
 AC_MSG_RESULT([$enable_ndebug])
+AM_CONDITIONAL([ENABLE_NDEBUG], [test "x${enable_ndebug}" != "xno"])
 AS_IF([test "x${enable_ndebug}" != "xno"], [AC_DEFINE([NDEBUG])])
 
 AS_IF([test "x${enable_shared}" != "xno"], [AC_DEFINE([BOOST_ALL_DYN_LINK])])
@@ -129,6 +131,7 @@ AC_ARG_ENABLE([avx2],
     [enable_avx2=$enableval],
     [enable_avx2=no])
 AC_MSG_RESULT([$enable_avx2])
+AM_CONDITIONAL([ENABLE_AVX2], [test "x${enable_avx2}" != "xno"])
 
 AC_MSG_CHECKING([--enable-avx512 option])
 AC_ARG_ENABLE([avx512],
@@ -137,6 +140,7 @@ AC_ARG_ENABLE([avx512],
     [enable_avx512=$enableval],
     [enable_avx512=no])
 AC_MSG_RESULT([$enable_avx512])
+AM_CONDITIONAL([ENABLE_AVX512], [test "x${enable_avx512}" != "xno"])
 
 AC_MSG_CHECKING([--enable-sse41 option])
 AC_ARG_ENABLE([sse41],
@@ -145,6 +149,7 @@ AC_ARG_ENABLE([sse41],
     [enable_sse41=$enableval],
     [enable_sse41=no])
 AC_MSG_RESULT([$enable_sse41])
+AM_CONDITIONAL([ENABLE_SSE41], [test "x${enable_sse41}" != "xno"])
 
 AC_MSG_CHECKING([--enable-shani option])
 AC_ARG_ENABLE([shani],
@@ -153,6 +158,7 @@ AC_ARG_ENABLE([shani],
     [enable_shani=$enableval],
     [enable_shani=no])
 AC_MSG_RESULT([$enable_shani])
+AM_CONDITIONAL([ENABLE_SHANI], [test "x${enable_shani}" != "xno"])
 
 AC_MSG_CHECKING([--with-ultrafast option])
 AC_ARG_WITH([ultrafast],
@@ -161,6 +167,7 @@ AC_ARG_WITH([ultrafast],
     [with_ultrafast=$withval],
     [with_ultrafast=no])
 AC_MSG_RESULT([$with_ultrafast])
+AM_CONDITIONAL([WITH_ULTRAFAST], [test "x${with_ultrafast}" != "xno"])
 
 AC_MSG_CHECKING([--with-secp256k1 option])
 AC_ARG_WITH([secp256k1],
@@ -169,6 +176,7 @@ AC_ARG_WITH([secp256k1],
     [with_secp256k1=$withval],
     [with_secp256k1=yes])
 AC_MSG_RESULT([$with_secp256k1])
+AM_CONDITIONAL([WITH_SECP256K1], [test "x${with_secp256k1}" != "xno"])
 
 # Set flags.
 #==============================================================================
